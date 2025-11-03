@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Coach Test</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    #chat { border: 1px solid #ccc; height: 300px; overflow-y: auto; padding: 10px; margin-bottom: 10px; }
+    #userInput { width: 70%; padding: 5px; }
+    button { padding: 5px 10px; }
+    .message { margin: 5px 0; padding: 5px; border-radius: 5px; }
+    .me { background: #007bff; color: white; text-align: right; }
+    .ai { background: #f0f0f0; }
+  </style>
+</head>
+<body>
+  <h1>Coach Test Interface</h1>
+  <div id="chat"></div>
+  <input type="text" id="userInput" placeholder="Tapez votre commande..." />
+  <button id="send">Envoyer</button>
+  <button id="clear">Effacer</button>
+  <div id="status"></div>
+
+  <script>
+    const chatEl = document.getElementById('chat');
+    const userInputEl = document.getElementById('userInput');
+    const sendBtn = document.getElementById('send');
+    const clearBtn = document.getElementById('clear');
+    const statusEl = document.getElementById('status');
+
+    function addMessage(text, who) {
+      const div = document.createElement('div');
+      div.className = 'message ' + who;
+      div.textContent = text;
+      chatEl.appendChild(div);
+      chatEl.scrollTop = chatEl.scrollHeight;
+    }
+
+    async function sendMessage() {
+      const query = userInputEl.value.trim();
+      if (!query) return;
+
+      addMessage(query, 'me');
+      userInputEl.value = '';
+      statusEl.textContent = 'Envoi en cours...';
+
+      try {
+        const response = await fetch('http://localhost:5057/coach/converse', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(query)
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        statusEl.textContent = '';
+
+        if (data.error) {
+          addMessage('Erreur: ' + data.error, 'ai');
+        } else if (data.response) {
+          addMessage(data.response, 'ai');
+        } else if (data.analysis) {
+          addMessage('Analyse: ' + data.analysis, 'ai');
+        } else {
+          addMessage(JSON.stringify(data, null, 2), 'ai');
+        }
+      } catch (error) {
+        statusEl.textContent = '';
+        addMessage('Erreur: ' + error.message, 'ai');
+      }
+    }
+
+    sendBtn.onclick = sendMessage;
+    clearBtn.onclick = () => {
+      chatEl.innerHTML = '';
+      statusEl.textContent = '';
+    };
+
+    userInputEl.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        sendMessage();
+      }
+    });
+
+    // Test automatique au chargement
+    window.addEventListener('load', () => {
+      console.log('Interface chargée');
+      addMessage('Interface prête ! Essayez "teste" ou "analyse le site web https://example.com"', 'ai');
+    });
+  </script>
+</body>
+</html>

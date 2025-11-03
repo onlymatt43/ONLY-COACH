@@ -1,0 +1,470 @@
+you: {}
+people: {}
+threads: []
+recent_conversation:
+- role: assistant
+  content: "test de m\xE9moire turso"
+  timestamp: '2025-10-28 06:15:58'
+- role: user
+  content: je veux principalements le l'apparence, le look. j'aime le cote "workshsop".
+    mon site n'a pas le meme contenu mais je veux une apparence similaire.
+  timestamp: '2025-10-28 06:15:58'
+- role: user
+  content: "Bonjour, test de m\xE9moire Turso"
+  timestamp: '2025-10-28 06:15:58'
+- role: assistant
+  content: "Pour tester la fonctionnalit\xE9 du syst\xE8me de m\xE9moire d'unTurbocharged\
+    \ Rear Shaft Operated (Turso) sur une voiture, vous pouvez suivre ces \xE9tapes\
+    \ :\n\n1. **D\xE9marrage de la V\xE9hicule** : Assurez-vous que le..."
+  timestamp: '2025-10-28 06:15:58'
+- role: user
+  content: "test m\xE9moire turso fonctionnelle"
+  timestamp: '2025-10-28 06:15:57'
+- role: assistant
+  content: "Bien s\xFBr, je comprends que vous souhaitez cr\xE9er un site web avec\
+    \ un design similaire \xE0 celui de l'\u0153uvre \"Crystal Website\" sur Dribbble.\
+    \ Pour commencer, nous allons d'abord analyser le style et les \xE9l\xE9..."
+  timestamp: '2025-10-28 06:15:14'
+- role: user
+  content: "Bonjour, test de m\xE9moire Turso"
+  timestamp: '2025-10-28 06:15:14'
+- role: assistant
+  content: "Pour tester la fonctionnalit\xE9 du syst\xE8me de m\xE9moire d'unTurbocharged\
+    \ Rear Shaft Operated (Turso) sur une voiture, vous pouvez suivre ces \xE9tapes\
+    \ :\n\n1. **D\xE9marrage de la V\xE9hicule** : Assurez-vous que le..."
+  timestamp: '2025-10-28 06:15:14'
+- role: user
+  content: "test m\xE9moire turso fonctionnelle"
+  timestamp: '2025-10-28 06:15:13'
+- role: assistant
+  content: "test de m\xE9moire turso"
+  timestamp: '2025-10-28 06:15:13'
+- role: assistant
+  content: "test de m\xE9moire turso"
+  timestamp: '2025-10-28 06:14:54'
+- role: user
+  content: 'je veux un site web avec le meme style que le premier site web qui est
+    sur ce lien : https://dribbble.com/shots/25742820-Crystal-Website'
+  timestamp: '2025-10-28 06:14:54'
+- role: user
+  content: "Bonjour, test de m\xE9moire Turso"
+  timestamp: '2025-10-28 06:14:54'
+- role: assistant
+  content: "Pour tester la fonctionnalit\xE9 du syst\xE8me de m\xE9moire d'unTurbocharged\
+    \ Rear Shaft Operated (Turso) sur une voiture, vous pouvez suivre ces \xE9tapes\
+    \ :\n\n1. **D\xE9marrage de la V\xE9hicule** : Assurez-vous que le..."
+  timestamp: '2025-10-28 06:14:53'
+- role: user
+  content: "test m\xE9moire turso fonctionnelle"
+  timestamp: '2025-10-28 06:14:53'
+- role: assistant
+  content: "Pour tester la fonctionnalit\xE9 du syst\xE8me de m\xE9moire d'unTurbocharged\
+    \ Rear Shaft Operated (Turso) sur une voiture, vous pouvez suivre ces \xE9tapes\
+    \ :\n\n1. **D\xE9marrage de la V\xE9hicule** : Assurez-vous que le..."
+  timestamp: '2025-10-28 06:14:16'
+- role: assistant
+  content: "Bien s\xFBr ! Voici la traduction en anglais :\n\n\"Ok, no problem. I\
+    \ just wanted to make sure you're okay, see you soon!!\"\n\nSi vous avez besoin\
+    \ d'autre chose ou si vous voulez v\xE9rifier quelque chose sur vo..."
+  timestamp: '2025-10-28 06:14:15'
+- role: user
+  content: "test m\xE9moire turso fonctionnelle"
+  timestamp: '2025-10-28 06:14:15'
+- role: assistant
+  content: "test de m\xE9moire turso"
+  timestamp: '2025-10-28 06:14:15'
+- role: user
+  content: "Bonjour, test de m\xE9moire Turso"
+  timestamp: '2025-10-28 06:14:15'
+- role: assistant
+  content: "Pour tester la fonctionnalit\xE9 du syst\xE8me de m\xE9moire d'unTurbocharged\
+    \ Rear Shaft Operated (Turso) sur une voiture, vous pouvez suivre ces \xE9tapes\
+    \ :\n\n1. **D\xE9marrage de la V\xE9hicule** : Assurez-vous que le..."
+  timestamp: '2025-10-28 06:13:24'
+- role: user
+  content: "test m\xE9moire turso fonctionnelle"
+  timestamp: '2025-10-28 06:13:24'
+- role: user
+  content: "Bonjour, test de m\xE9moire Turso"
+  timestamp: '2025-10-28 06:13:24'
+- role: assistant
+  content: "test de m\xE9moire turso"
+  timestamp: '2025-10-28 06:13:23'
+- role: user
+  content: 'Traduis ce message en anglais : "ok pas de probleme, je voulais juste
+    m''assurer que tu etais ok, a bientot !!"'
+  timestamp: '2025-10-28 06:13:23'
+- role: user
+  content: "test m\xE9moire turso fonctionnelle"
+  timestamp: '2025-10-28 05:46:39'
+- role: user
+  content: "Bonjour, test de m\xE9moire Turso"
+  timestamp: '2025-10-28 05:46:39'
+- role: assistant
+  content: "Bien s\xFBr, je peux v\xE9rifier la base de donn\xE9es Turso pour vous\
+    \ aider \xE0 comprendre comment les donn\xE9es sont categoris\xE9es. Tout d'abord,\
+    \ j'aurai besoin que vous me fournissiez l'URL du site web ou le che..."
+  timestamp: '2025-10-28 05:46:39'
+- role: assistant
+  content: "D'accord, j'ai bien compris. Je vais analyser le site web <https://pierremarcbeaumont.tumblr.com>.\
+    \ Cela me permettra de v\xE9rifier sa performance, son contenu et d'autres aspects\
+    \ techniques.\n\n### \xC9tape ..."
+  timestamp: '2025-10-28 05:46:38'
+- role: assistant
+  content: "Pour tester la fonctionnalit\xE9 du syst\xE8me de m\xE9moire d'unTurbocharged\
+    \ Rear Shaft Operated (Turso) sur une voiture, vous pouvez suivre ces \xE9tapes\
+    \ :\n\n1. **D\xE9marrage de la V\xE9hicule** : Assurez-vous que le..."
+  timestamp: '2025-10-28 05:46:38'
+- role: user
+  content: tu peux verifier la base de donnees turso ? je veux savoir comment elle
+    categorise
+  timestamp: '2025-10-28 05:46:30'
+- role: user
+  content: 'analyse : https://pierremarcbeaumont.tumblr.com'
+  timestamp: '2025-10-28 05:46:29'
+- role: user
+  content: "Bonjour, test de m\xE9moire Turso"
+  timestamp: '2025-10-28 05:46:29'
+- role: assistant
+  content: "Pour tester la fonctionnalit\xE9 du syst\xE8me de m\xE9moire d'unTurbocharged\
+    \ Rear Shaft Operated (Turso) sur une voiture, vous pouvez suivre ces \xE9tapes\
+    \ :\n\n1. **D\xE9marrage de la V\xE9hicule** : Assurez-vous que le..."
+  timestamp: '2025-10-28 05:46:29'
+- role: user
+  content: "test m\xE9moire turso fonctionnelle"
+  timestamp: '2025-10-28 05:46:29'
+- role: user
+  content: "test m\xE9moire turso fonctionnelle"
+  timestamp: '2025-10-28 05:45:58'
+- role: assistant
+  content: "Pour tester la fonctionnalit\xE9 du syst\xE8me de m\xE9moire d'unTurbocharged\
+    \ Rear Shaft Operated (Turso) sur une voiture, vous pouvez suivre ces \xE9tapes\
+    \ :\n\n1. **D\xE9marrage de la V\xE9hicule** : Assurez-vous que le..."
+  timestamp: '2025-10-28 05:45:58'
+- role: user
+  content: "Bonjour, test de m\xE9moire Turso"
+  timestamp: '2025-10-28 05:45:58'
+- role: assistant
+  content: "G\xE9nial ! Je vois que toutes vos t\xE2ches ont \xE9t\xE9 r\xE9alis\xE9\
+    es avec succ\xE8s. Pouvez-vous me dire quels \xE9taient ces t\xE2ches exactement\
+    \ ? Cela m'aidera \xE0 mieux comprendre et \xE0 vous fournir une assistance plus\
+    \ p..."
+  timestamp: '2025-10-28 05:45:58'
+- role: assistant
+  content: "test de m\xE9moire turso"
+  timestamp: '2025-10-28 05:45:57'
+- role: user
+  content: ok les taches sont faites
+  timestamp: '2025-10-28 05:45:49'
+- role: user
+  content: "test m\xE9moire turso fonctionnelle"
+  timestamp: '2025-10-28 05:45:48'
+- role: assistant
+  content: "test de m\xE9moire turso"
+  timestamp: '2025-10-28 05:45:48'
+- role: user
+  content: "Bonjour, test de m\xE9moire Turso"
+  timestamp: '2025-10-28 05:45:48'
+- role: assistant
+  content: "Pour tester la fonctionnalit\xE9 du syst\xE8me de m\xE9moire d'unTurbocharged\
+    \ Rear Shaft Operated (Turso) sur une voiture, vous pouvez suivre ces \xE9tapes\
+    \ :\n\n1. **D\xE9marrage de la V\xE9hicule** : Assurez-vous que le..."
+  timestamp: '2025-10-28 05:45:48'
+- role: user
+  content: "Bonjour, test de m\xE9moire Turso"
+  timestamp: '2025-10-28 05:42:18'
+- role: assistant
+  content: "Pour tester la fonctionnalit\xE9 du syst\xE8me de m\xE9moire d'unTurbocharged\
+    \ Rear Shaft Operated (Turso) sur une voiture, vous pouvez suivre ces \xE9tapes\
+    \ :\n\n1. **D\xE9marrage de la V\xE9hicule** : Assurez-vous que le..."
+  timestamp: '2025-10-28 05:42:18'
+- role: assistant
+  content: "Salut Mathieu,\n\nC'est g\xE9nial de voir que tout se passe bien avec\
+    \ ton nouveau plugin WordPress AI! \U0001F389 Voici quelques actions concr\xE8\
+    tes pour les t\xE2ches \xE0 venir :\n\n1. **Archiver l'ancien plugin onlymatt-a..."
+  timestamp: '2025-10-28 05:42:18'
+- role: assistant
+  content: "test de m\xE9moire turso"
+  timestamp: '2025-10-28 05:42:17'
+- role: assistant
+  content: 'Erreur: OpenWebUI status 405...'
+  timestamp: '2025-10-28 05:42:17'
+- role: user
+  content: "Bonjour, test de m\xE9moire Turso"
+  timestamp: '2025-10-28 05:41:16'
+- role: assistant
+  content: "Pour tester la fonctionnalit\xE9 du syst\xE8me de m\xE9moire d'unTurbocharged\
+    \ Rear Shaft Operated (Turso) sur une voiture, vous pouvez suivre ces \xE9tapes\
+    \ :\n\n1. **D\xE9marrage de la V\xE9hicule** : Assurez-vous que le..."
+  timestamp: '2025-10-28 05:41:16'
+- role: user
+  content: "test m\xE9moire turso fonctionnelle"
+  timestamp: '2025-10-28 05:41:16'
+- role: user
+  content: "Salut [Coach],\n\nSuper nouvelle ! Le plugin WordPress AI fonctionne enfin\
+    \ parfaitement ! \U0001F389\n\nCe qui a \xE9t\xE9 fait :\n\n\u2705 Plugin ai-website-assistant\
+    \ install\xE9 et fonctionnel\n\u2705 Shortcode [ai_assistant] remplace les anciens\n\
+    \u2705 Compatibilit\xE9 Breakdance parfaite\n\u2705 Aper\xE7u dans l'admin WordPress\n\
+    T\xE2ches \xE0 faire pour nettoyer :\n\nArchiver l'ancien plugin onlymatt-ai.php\n\
+    Supprimer les fichiers PHP isol\xE9s (ai-chat.php, etc.)\nMettre \xE0 jour la\
+    \ documentation\nOrganiser les repositories GitHub\nTester compl\xE8tement le\
+    \ nouveau plugin\nPriorit\xE9 : Les t\xE2ches 1-3 d'abord, puis 4-5.\n\nD\xE9\
+    tails techniques : Tout est dans le repo onlymatt-wp-plugin sur GitHub.\n\nMerci\
+    \ ! \U0001F60A"
+  timestamp: '2025-10-28 05:41:16'
+- role: user
+  content: "tu peux me faire une recherche sur OM43, une compagnie de Mathieu Courchesne\
+    \ bas\xE9 a Montreal"
+  timestamp: '2025-10-28 05:41:15'
+- role: assistant
+  content: "Merci pour ces r\xE9f\xE9rences. Voulez-vous que j'analyse ces deux sites\
+    \ web pour vous aider \xE0 identifier leurs points forts et leurs zones d'am\xE9\
+    lioration ? Ou avez-vous des questions sp\xE9cifiques concernan..."
+  timestamp: '2025-10-28 01:23:52'
+- role: assistant
+  content: "Analyse: Le site web \"OM43|ONE:PM \u2013 THIS IS NOT A GALLERY\" semble\
+    \ se concentrer sur l'\u0153uvre de cr\xE9ateurs artistiques et industriels, probablement\
+    \ Pierre Marc Beaumont et M\xE9lissa Courchesne. Le site propose des..."
+  timestamp: '2025-10-28 01:23:51'
+- role: user
+  content: "Bonjour, test de m\xE9moire Turso"
+  timestamp: '2025-10-28 01:23:51'
+- role: assistant
+  content: "Pour tester la fonctionnalit\xE9 du syst\xE8me de m\xE9moire d'unTurbocharged\
+    \ Rear Shaft Operated (Turso) sur une voiture, vous pouvez suivre ces \xE9tapes\
+    \ :\n\n1. **D\xE9marrage de la V\xE9hicule** : Assurez-vous que le..."
+  timestamp: '2025-10-28 01:23:51'
+- role: user
+  content: "test m\xE9moire turso fonctionnelle"
+  timestamp: '2025-10-28 01:23:51'
+- role: assistant
+  content: "Pour tester la fonctionnalit\xE9 du syst\xE8me de m\xE9moire d'unTurbocharged\
+    \ Rear Shaft Operated (Turso) sur une voiture, vous pouvez suivre ces \xE9tapes\
+    \ :\n\n1. **D\xE9marrage de la V\xE9hicule** : Assurez-vous que le..."
+  timestamp: '2025-10-28 01:23:44'
+- role: user
+  content: 'https://dribbble.com/shots/25742820-Crystal-Website
+
+    https://www.abgd.it/?ref=minimal.gallery'
+  timestamp: '2025-10-28 01:23:44'
+- role: assistant
+  content: "test de m\xE9moire turso"
+  timestamp: '2025-10-28 01:23:43'
+- role: user
+  content: analyse mon site om43.com
+  timestamp: '2025-10-28 01:23:43'
+- role: user
+  content: "Bonjour, test de m\xE9moire Turso"
+  timestamp: '2025-10-28 01:23:43'
+- role: assistant
+  content: "test de m\xE9moire turso"
+  timestamp: '2025-10-28 01:20:23'
+- role: assistant
+  content: "Bien compris ! Avant de cr\xE9er les templates, nous allons effectuer\
+    \ une analyse approfondie du style des deux sites web. Pour cela, j'aurai besoin\
+    \ des URL des sites dont vous souhaitez reproduire le de..."
+  timestamp: '2025-10-28 01:20:23'
+- role: user
+  content: "Bonjour, test de m\xE9moire Turso"
+  timestamp: '2025-10-28 01:20:22'
+- role: assistant
+  content: "Pour tester la fonctionnalit\xE9 du syst\xE8me de m\xE9moire d'unTurbocharged\
+    \ Rear Shaft Operated (Turso) sur une voiture, vous pouvez suivre ces \xE9tapes\
+    \ :\n\n1. **D\xE9marrage de la V\xE9hicule** : Assurez-vous que le..."
+  timestamp: '2025-10-28 01:20:22'
+- role: user
+  content: "test m\xE9moire turso fonctionnelle"
+  timestamp: '2025-10-28 01:20:22'
+- role: user
+  content: pour les deux derniers liens, je veux que tu crees des templates avec le
+    meme look qu'eux, donc analyse du style
+  timestamp: '2025-10-28 01:20:11'
+- role: user
+  content: tu es connecte a gateway ?
+  timestamp: '2025-10-28 01:20:10'
+- role: user
+  content: "Bonjour, test de m\xE9moire Turso"
+  timestamp: '2025-10-28 01:20:10'
+- role: assistant
+  content: "Pour tester la fonctionnalit\xE9 du syst\xE8me de m\xE9moire d'unTurbocharged\
+    \ Rear Shaft Operated (Turso) sur une voiture, vous pouvez suivre ces \xE9tapes\
+    \ :\n\n1. **D\xE9marrage de la V\xE9hicule** : Assurez-vous que le..."
+  timestamp: '2025-10-28 01:20:10'
+- role: user
+  content: "test m\xE9moire turso fonctionnelle"
+  timestamp: '2025-10-28 01:20:10'
+- role: assistant
+  content: "Je vois que vous avez partag\xE9 un lien vers [https://www.abgd.it/?ref=minimal.gallery].\
+    \ C'est int\xE9ressant ! Avant de continuer, pourriez-vous me dire ce que nous\
+    \ devons v\xE9rifier ou analyser avec ce sit..."
+  timestamp: '2025-10-28 01:18:27'
+- role: assistant
+  content: "Pour tester la fonctionnalit\xE9 du syst\xE8me de m\xE9moire d'unTurbocharged\
+    \ Rear Shaft Operated (Turso) sur une voiture, vous pouvez suivre ces \xE9tapes\
+    \ :\n\n1. **D\xE9marrage de la V\xE9hicule** : Assurez-vous que le..."
+  timestamp: '2025-10-28 01:18:26'
+- role: user
+  content: "test m\xE9moire turso fonctionnelle"
+  timestamp: '2025-10-28 01:18:26'
+- role: user
+  content: "Bonjour, test de m\xE9moire Turso"
+  timestamp: '2025-10-28 01:18:26'
+- role: assistant
+  content: "Je comprends que vous cherchez des informations sur le test final pour\
+    \ la m\xE9moire du Turso, mais je n'ai malheureusement pas d'informations sp\xE9\
+    cifiques sur ce test sans plus de contexte. Le Turso est ..."
+  timestamp: '2025-10-28 01:18:25'
+- role: assistant
+  content: "Pour tester la fonctionnalit\xE9 du syst\xE8me de m\xE9moire d'unTurbocharged\
+    \ Rear Shaft Operated (Turso) sur une voiture, vous pouvez suivre ces \xE9tapes\
+    \ :\n\n1. **D\xE9marrage de la V\xE9hicule** : Assurez-vous que le..."
+  timestamp: '2025-10-28 01:18:17'
+- role: user
+  content: 'lui aussi : https://www.abgd.it/?ref=minimal.gallery'
+  timestamp: '2025-10-28 01:18:17'
+- role: assistant
+  content: "test de m\xE9moire turso"
+  timestamp: '2025-10-28 01:18:16'
+- role: user
+  content: "Test final de la m\xE9moire Turso"
+  timestamp: '2025-10-28 01:18:16'
+- role: user
+  content: "Bonjour, test de m\xE9moire Turso"
+  timestamp: '2025-10-28 01:18:16'
+- role: assistant
+  content: "Bonjour ! Je vais bien, merci. Comment allez-vous aujourd'hui ? N'h\xE9\
+    sitez pas \xE0 me poser des questions si vous avez besoin d'aide ou de conseils\
+    \ sur quoi que ce soit."
+  timestamp: '2025-10-28 01:17:54'
+- role: user
+  content: "Bonjour, comment \xE7a va ?"
+  timestamp: '2025-10-28 01:17:54'
+- role: assistant
+  content: "Merci pour le partage ! Cela semble \xEAtre un design \xE9l\xE9gant et\
+    \ fonctionnel pour une page de accueil d'entreprise. \n\nEn parlant du test de\
+    \ la m\xE9moire Turso, avez-vous d\xE9j\xE0 lanc\xE9 les commandes n\xE9cessaire..."
+  timestamp: '2025-10-28 01:17:54'
+- role: assistant
+  content: "Analyse: Pour vous aider efficacement, j'ai besoin du message d'erreur\
+    \ ou du log sp\xE9cifique que vous rencontrez lors des tests de sauvegarde avec\
+    \ Turso. Pourriez-vous me fournir ce d\xE9tail ? Sinon, je peux supp..."
+  timestamp: '2025-10-28 01:17:53'
+- role: user
+  content: Test de sauvegarde Turso
+  timestamp: '2025-10-28 01:17:53'
+- role: user
+  content: https://dribbble.com/shots/26180615-Noir-Art-Studio-Landing-Page
+  timestamp: '2025-10-28 01:17:41'
+- role: assistant
+  content: "Pour tester la fonctionnalit\xE9 du syst\xE8me de m\xE9moire d'unTurbocharged\
+    \ Rear Shaft Operated (Turso) sur une voiture, vous pouvez suivre ces \xE9tapes\
+    \ :\n\n1. **D\xE9marrage de la V\xE9hicule** : Assurez-vous que le..."
+  timestamp: '2025-10-28 01:17:40'
+- role: user
+  content: "test m\xE9moire turso fonctionnelle"
+  timestamp: '2025-10-28 01:17:40'
+- role: assistant
+  content: "test de m\xE9moire turso"
+  timestamp: '2025-10-28 01:17:40'
+- role: user
+  content: "Bonjour, test de m\xE9moire Turso"
+  timestamp: '2025-10-28 01:17:39'
+- role: assistant
+  content: "test de m\xE9moire turso"
+  timestamp: '2025-10-28 01:13:17'
+- role: assistant
+  content: "Je comprends votre souhait de donner \xE0 votre site une apparence similaire\
+    \ au site du \"workshop\" que vous mentionnez. Pour y parvenir, nous allons effectuer\
+    \ quelques \xE9tapes pour analyser et copier l'ap..."
+  timestamp: '2025-10-28 01:13:17'
+- role: user
+  content: "Bonjour, test de m\xE9moire Turso"
+  timestamp: '2025-10-28 01:13:16'
+- role: assistant
+  content: "Pour tester la fonctionnalit\xE9 du syst\xE8me de m\xE9moire d'unTurbocharged\
+    \ Rear Shaft Operated (Turso) sur une voiture, vous pouvez suivre ces \xE9tapes\
+    \ :\n\n1. **D\xE9marrage de la V\xE9hicule** : Assurez-vous que le..."
+  timestamp: '2025-10-28 01:13:16'
+- role: user
+  content: "test m\xE9moire turso fonctionnelle"
+  timestamp: '2025-10-28 01:13:16'
+general:
+  text_evaluation:
+    value: "Le contenu du fichier est le suivant:\n\nCe fichier a \xE9t\xE9 cr\xE9\
+      \xE9 uniquement pour l'\xE9valuation de classification.\nIl ne contient aucune\
+      \ information personnelle ou professionnelle particuli\xE8re.\nTaille : 282\
+      \ octets"
+    file_info:
+      filename: test_file.txt
+      content_type: text/plain
+      file_size: 282
+      uploaded_at: '2025-10-29 01:31:07.239108'
+    category_analysis:
+      suggested_category: general
+      confidence: 70
+      reasoning: "Le fichier 'test_file.txt' est d'un type text/plain, ce qui sugg\xE8\
+        re qu'il contient du texte brut. Sans avoir l'acc\xE8s au contenu r\xE9el,\
+        \ il serait difficile de cat\xE9goriser ce fichier avec certitude dans une\
+        \ des cat\xE9gories sp\xE9cifiques. Cependant, comme les fichiers de ce type\
+        \ peuvent \xEAtre utilis\xE9s pour diverses t\xE2ches (notations, notes, \xE9\
+        changes textuels), la cat\xE9gorie 'general' semble appropri\xE9e."
+      extracted_content: "Le contenu du fichier est le suivant:\n\nCe fichier a \xE9\
+        t\xE9 cr\xE9\xE9 uniquement pour l'\xE9valuation de classification.\nIl ne\
+        \ contient aucune information personnelle ou professionnelle particuli\xE8\
+        re.\nTaille : 282 octets"
+      suggested_key: text_evaluation
+    added_at: '2025-10-29 01:31:16.926848'
+    category: general
+    source: smart_upload
+  "m\xE9moire_ping":
+    value: "M\xE9moire: Ping"
+    added_at: '2025-10-29 04:35:34.870594'
+    category: general
+    source: interface_category
+personnel:
+  "cat\xE9gorie_personnel_can_you_rephrase_that___well_i":
+    value: "[Cat\xE9gorie: personnel] can you rephrase that :  Well ihe is weird as\
+      \ fuck. He might be autistic also, so I know I can\u2019t say things like that.\
+      \ Very hard to communicate with, was piss off cause he felt that he was not\
+      \ my priority, made a big deal about the fact that is ban from onlyfans (or\
+      \ was not able to finish the first step to create the account) he was piss off\
+      \ about the delay of posting, and to be honest, he is very cute I have to admit,\
+      \ but so boring in bed."
+    added_at: '2025-10-29 02:01:51.550053'
+    category: personnel
+    source: interface_category
+  personnel_ping:
+    value: 'Personnel: ping'
+    added_at: '2025-10-29 04:36:27.122602'
+    category: personnel
+    source: interface_category
+imported_conversations:
+- source: openai
+  imported_at: '2025-10-29 02:04:10.008436'
+  messages:
+  - role: user
+    content: Bonjour, test import OpenAI
+  - role: assistant
+    content: Bonjour ! Comment puis-je vous aider ?
+staff:
+  test_dossier:
+    value: Ceci est un test pour la section staff
+    added_at: '2025-10-29 02:11:13.503994'
+    category: staff
+    source: api
+business:
+  "\U0001F4C5 rdv_5_769":
+    value: 'Rendez-vous: rdv client xyz demain 14h'
+    added_at: '2025-10-29 02:19:54.500037'
+    category: business
+    source: api
+  business_ping:
+    value: 'Business: Ping'
+    added_at: '2025-10-29 04:35:52.697231'
+    category: business
+    source: interface_category
+  business_aide_moi_a_structurer_mon_projet__om43com:
+    value: 'Business: aide moi a structurer mon projet : om43.com the website'
+    added_at: '2025-10-29 06:53:02.750391'
+    category: business
+    source: interface_category

@@ -1,0 +1,12 @@
+# Liste des sites à piloter par le coach local
+sites:
+  - name: "coach"
+    api_base: "http://localhost:5057"
+    admin_key: "local_key"
+  - name: "onlymatt-gateway"
+    api_base: "https://onlymatt-gateway.onrender.com"
+    admin_key: "64b29ac4e96c12e23c1a58f93ad1509e"
+  # Ajoutez d'autres sites si besoin
+  # - name: "Autre site"
+  #   api_base: "https://autre-site.onrender.com"
+  #   admin_key: "CLE_ADMIN"
