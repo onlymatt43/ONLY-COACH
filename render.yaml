@@ -1,0 +1,23 @@
+services:services:
+
+  - type: web  - type: web
+
+    name: om43-coach    name: onlymatt-coach
+
+    env: docker    env: docker
+
+    envVars:    envVars:
+
+      - key: OAI_BASE      - key: OAI_BASE
+
+        value: https://api.openai.com/v1        value: https://api.openai.com/v1
+
+      - key: OAI_MODEL      - key: OAI_MODEL
+
+        value: gpt-3.5-turbo        value: gpt-3.5-turbo
+
+      - key: OPENAI_API_KEY      - key: USE_TURSO_MEMORY
+
+        value: sk-your-openai-api-key-here        value: false
+      - key: COACH_ENV
+        value: production
