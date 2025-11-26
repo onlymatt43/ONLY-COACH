@@ -1,24 +1,5 @@
-const express = require('express');
-const cors = require('cors');
-const bodyParser = require('body-parser');
-require('dotenv').config();
-
-const app = express();
-const PORT = 3001;
-
-// 🟢 IMPORT ROUTES
-const validateCode = require('./routes/validateCode');
-const chat = require('./routes/chat');
-const videos = require('./routes/videos');
-
-// 🟢 MIDDLEWARE
-app.use(cors());
-app.use(bodyParser.json());
-
-// 🟢 USE ROUTES
-app.use('/api', validateCode);
-app.use('/api', chat);
-app.use('/api', videos);
+const app = require('./app');
+const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => {
   console.log(`Backend server is running on http://localhost:${PORT}`);
