@@ -1,6 +1,6 @@
 const express = require('express');
-const fs = require('fs');
-const path = require('path');
+// persistence handled by ../db
+const db = require('../db');
 const router = express.Router();
 
 const codesFilePath = path.join(__dirname, '../data/codes.json');
@@ -10,26 +10,17 @@ router.post('/validate', (req, res) => {
 	const { code } = req.body || {};
 	if (!code) return res.status(400).json({ valid: false, message: 'Code manquant.' });
 
-	let codes = [];
-	try {
-		if (!fs.existsSync(codesFilePath)) return res.json({ valid: false });
-		codes = JSON.parse(fs.readFileSync(codesFilePath, 'utf-8'));
-	} catch (err) {
-		console.error('Error reading codes.json:', err?.message || err);
-		return res.status(500).json({ valid: false, message: 'Erreur serveur.' });
-	}
-
-	const entry = codes.find((c) => c.code === code);
+	const entry = db.findCode(code);
 	if (!entry) return res.json({ valid: false });
 
 	const now = Date.now();
 	// if never activated, activate now
 	if (!entry.activatedAt) {
-		entry.activatedAt = now;
+		// activate using DB
 		try {
-			fs.writeFileSync(codesFilePath, JSON.stringify(codes, null, 2));
-		} catch (writeErr) {
-			console.warn('Failed to persist activation timestamp:', writeErr?.message || writeErr);
+			db.activateCode(code, now);
+		} catch (e) {
+			console.warn('failed to persist activatedAt in DB:', e?.message || e);
 		}
 		return res.json({ valid: true });
 	}

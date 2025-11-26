@@ -23,6 +23,10 @@ Environment variables
 - BUNNY_API_KEY and BUNNY_LIBRARY_ID — will make `/api/videos` use Bunny.net API. Falls back to `data/videos.json` if not present.
 - OPENAI_API_KEY — enables the chat route to use OpenAI.
 
+Database / migration
+- The backend now uses SQLite (file: `data/db.sqlite`) for codes storage. On first run, if `data/db.sqlite` doesn't exist but `data/codes.json` does, the server will auto-import codes from `codes.json` into the DB.
+- Using a DB allows atomic updates and easier migration in the future; if you want Postgres instead I can add a migration layer.
+
 Admin & merchant integration (gift cards)
 - ADMIN_API_KEY (env var) — required for admin endpoints. Use the header `x-admin-key` when calling admin endpoints.
 	- Endpoints:

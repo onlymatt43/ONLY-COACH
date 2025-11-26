@@ -1,11 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const fs = require('fs');
-const path = require('path');
+// db handles persistent storage
 const crypto = require('crypto');
 
 const MERCHANT_KEY = process.env.MERCHANT_API_KEY || 'dev_merchant_key_change_me';
-const codesFile = path.join(__dirname, '../data/codes.json');
+const db = require('../db');
 
 function verifyMerchant(req, res, next) {
   const key = req.header('x-merchant-key') || req.query.merchantKey || req.body.merchantKey;
@@ -25,18 +24,14 @@ router.post('/webhook/giftcard', verifyMerchant, (req, res) => {
   const { quantity = 1, prefix = '', customerRef } = req.body || {};
   const q = Math.min(Math.max(parseInt(quantity, 10) || 1, 1), 1000);
 
-  let codes = [];
-  try { if (fs.existsSync(codesFile)) codes = JSON.parse(fs.readFileSync(codesFile, 'utf-8')); } catch (e) { codes = []; }
-
   const created = [];
   for (let i = 0; i < q; i++) {
     const c = generateCode(prefix, 10);
     const entry = { code: c, activatedAt: null, meta: { customerRef: customerRef || null } };
-    codes.push(entry);
     created.push(entry);
   }
 
-  try { fs.writeFileSync(codesFile, JSON.stringify(codes, null, 2)); } catch (err) {
+  try { db.createCodes(created); } catch (err) {
     console.error('webhook save error', err?.message || err);
     return res.status(500).json({ error: 'failed to create codes' });
   }
