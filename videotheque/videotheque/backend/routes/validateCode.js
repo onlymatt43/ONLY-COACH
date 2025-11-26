@@ -3,7 +3,7 @@ const express = require('express');
 const db = require('../db');
 const router = express.Router();
 
-const codesFilePath = path.join(__dirname, '../data/codes.json');
+// persistence handled by ../db; when better-sqlite3 isn't available db.js falls back to JSON storage
 
 // POST /validate — validate code, set activatedAt on first use and check 1 hour validity
 router.post('/validate', (req, res) => {

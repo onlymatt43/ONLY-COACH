@@ -9,7 +9,7 @@ const BUNNY_API_KEY = process.env.BUNNY_API_KEY;
 const BUNNY_LIBRARY_ID = process.env.BUNNY_LIBRARY_ID;
 
 const localVideosPath = path.join(__dirname, '../data/videos.json');
-const codesPath = path.join(__dirname, '../data/codes.json');
+const db = require('../db');
 const jwt = require('jsonwebtoken');
 const VIDEO_TOKEN_SECRET = process.env.VIDEO_TOKEN_SECRET || process.env.SESSION_SECRET || 'dev_secret_change_me';
 
@@ -58,27 +58,14 @@ router.post('/videos/:id/access', (req, res) => {
 
   if (!code) return res.status(401).json({ error: 'Missing code' });
 
-  // read codes and validate/activate
-  let codes = [];
-  try {
-    if (!fs.existsSync(codesPath)) return res.status(403).json({ error: 'No codes configured' });
-    codes = JSON.parse(fs.readFileSync(codesPath, 'utf-8'));
-  } catch (err) {
-    console.error('Error reading codes.json for access:', err?.message || err);
-    return res.status(500).json({ error: 'Server error' });
-  }
-
-  const entry = codes.find((c) => c.code === code);
+  // check db for code
+  const entry = db.findCode(code);
+  if (!entry) return res.status(403).json({ error: 'Invalid code' });
   if (!entry) return res.status(403).json({ error: 'Invalid code' });
 
   const now = Date.now();
   if (!entry.activatedAt) {
-    entry.activatedAt = now;
-    try {
-      fs.writeFileSync(codesPath, JSON.stringify(codes, null, 2));
-    } catch (writeErr) {
-      console.warn('Failed to persist activation timestamp on access:', writeErr?.message || writeErr);
-    }
+    try { db.activateCode(code, now); } catch (e) { console.warn('db activation failed', e?.message || e); }
   }
 
   const oneHour = 60 * 60 * 1000;

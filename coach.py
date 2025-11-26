@@ -6,10 +6,11 @@ from fastapi.staticfiles import StaticFiles
 from typing import Optional
 import requests, os, yaml
 from datetime import datetime
-from datetime import datetime
 from conversation_db import db, add_message_to_session, get_session_history
 import base64
 import mimetypes
+import openai
+from bs4 import BeautifulSoup
 
 app = FastAPI()
 
@@ -80,7 +81,10 @@ def query_anythingllm(query: str = Body(...)):
     """
     Interroge AnythingLLM pour l'analyse de documents.
     """
-    anythingllm_url = "http://host.docker.internal:3001/api/chat"  # Adapter selon votre setup
+    anythingllm_url = os.getenv("ANYTHINGLLM_URL")
+    if not anythingllm_url:
+        raise HTTPException(503, "Le service AnythingLLM n'est pas configuré. Définissez la variable d'environnement ANYTHINGLLM_URL.")
+    
     try:
         response = requests.post(anythingllm_url, json={"message": query}, timeout=30)
         if response.status_code == 200:
@@ -95,7 +99,10 @@ def query_openwebui(query: str = Body(...)):
     """
     Interroge OpenWebUI pour les interactions web.
     """
-    openwebui_url = "http://host.docker.internal:3000/api/chat"  # Adapter selon votre setup
+    openwebui_url = os.getenv("OPENWEBUI_URL")
+    if not openwebui_url:
+        raise HTTPException(503, "Le service OpenWebUI n'est pas configuré. Définissez la variable d'environnement OPENWEBUI_URL.")
+
     try:
         response = requests.post(openwebui_url, json={"message": query}, timeout=30)
         if response.status_code == 200:
@@ -110,7 +117,10 @@ def query_local_assistant(query: str = Body(...)):
     """
     Interroge le local-assistant.
     """
-    assistant_url = "http://host.docker.internal:9090/api/query"  # Adapter selon votre setup
+    assistant_url = os.getenv("LOCAL_ASSISTANT_URL")
+    if not assistant_url:
+        raise HTTPException(503, "Le service Local Assistant n'est pas configuré. Définissez la variable d'environnement LOCAL_ASSISTANT_URL.")
+
     try:
         response = requests.post(assistant_url, json={"query": query}, timeout=30)
         if response.status_code == 200:
@@ -426,45 +436,41 @@ def analyze_file_content(file_content: bytes, filename: str, content_type: str) 
             "file_size": len(file_content)
         }
 
-MEM = load_mem()
-
-# ---------- Ollama Chat ----------
+# ---------- OpenAI Chat ----------
 def chat(system: str, user: str, temp: float = 0.3) -> str:
-    url = f"{OAI_BASE}/api/chat"
-    payload = {
-        "model": OAI_MODEL,
-        "temperature": temp,
-        "messages": [
-            {"role": "system", "content": system},
-            {"role": "user",   "content": user},
-        ],
-        "stream": False,
-    }
+    """
+    Communicates with OpenAI API.
+    """
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        raise HTTPException(500, "OPENAI_API_KEY environment variable not set.")
+
+    client = openai.OpenAI(api_key=api_key, base_url=OAI_BASE if OAI_BASE != "http://host.docker.internal:11434" else "https://api.openai.com/v1")
+
     try:
-        r = requests.post(url, json=payload, timeout=20)
+        completion = client.chat.completions.create(
+            model=OAI_MODEL,
+            temperature=temp,
+            messages=[
+                {"role": "system", "content": system},
+                {"role": "user", "content": user},
+            ]
+        )
+        content = completion.choices[0].message.content
+
+    except openai.APIConnectionError as e:
+        raise HTTPException(502, f"OpenAI API request failed to connect: {e}")
+    except openai.RateLimitError as e:
+        raise HTTPException(429, f"OpenAI API request exceeded rate limit: {e}")
+    except openai.APIStatusError as e:
+        raise HTTPException(502, f"OpenAI API returned an error status: {e}")
     except Exception as e:
-        raise HTTPException(502, f"Ollama unreachable: {e}")
-
-    raw = r.text
-    if r.status_code != 200:
-        raise HTTPException(502, f"Ollama {r.status_code}: {raw[:500]}")
-
-    try:
-        j = r.json()
-    except:
-        raise HTTPException(502, f"Ollama non-JSON: {raw[:500]}")
-
-    try:
-        content = j["message"]["content"]
-    except:
-        try:
-            content = j["choices"][0]["message"]["content"]
-        except:
-            raise HTTPException(502, f"Ollama bad JSON: {j}")
+        # Catch any other unexpected errors
+        raise HTTPException(500, f"An unexpected error occurred with OpenAI API: {e}")
 
     content = (content or "").strip()
     if not content:
-        raise HTTPException(502, "Ollama returned empty content")
+        raise HTTPException(502, "OpenAI returned empty content")
     return content
 
 # ---------- Chat ----------
@@ -1308,8 +1314,6 @@ def analyze_website_content(url: str):
     """
     Fonction helper pour analyser le contenu d'un site web
     """
-    import requests
-    from bs4 import BeautifulSoup
     
     try:
         response = requests.get(url, timeout=10, headers={
@@ -1686,8 +1690,6 @@ Utilise ces informations pour contextualiser tes réponses quand il s'agit de pr
         # Analyse d'om43.com
         if "om43.com" in user_query_lower or "om43" in user_query_lower:
             try:
-                # Vérifier la connectivité du site
-                import requests
                 response = requests.get("https://om43.com", timeout=10)
                 site_result = {
                     "status": "ok" if response.status_code == 200 else "error",

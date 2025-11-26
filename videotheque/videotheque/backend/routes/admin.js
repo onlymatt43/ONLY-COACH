@@ -7,7 +7,9 @@ const db = require('../db');
 const ADMIN_KEY = process.env.ADMIN_API_KEY || 'dev_admin_key_change_me';
 
 function requireAdmin(req, res, next) {
-  const key = req.header('x-admin-key') || req.query.adminKey || req.body.adminKey;
+  // accept either x-admin-key (explicit) or x-api-key (common header), query or body
+  const key = req.header('x-admin-key') || req.header('x-api-key') || req.query?.adminKey || req.body?.adminKey;
+  
   if (!key || key !== ADMIN_KEY) return res.status(401).json({ error: 'unauthorized' });
   next();
 }
