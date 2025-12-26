@@ -48,37 +48,7 @@ class Spread_It_Plugin {
         add_submenu_page('spread-it','Settings','Settings','manage_options','spread-it',[$this,'settings_page']);
         add_submenu_page('spread-it','AI Chat','AI Chat','manage_options','spread-it-ai-chat',[$this,'ai_chat_page']);
     }
-    public function register_settings(){
-        register_setting(self::OPT_GROUP, self::OPT_KEY, [
-            'type'=>'array',
-            'sanitize_callback'=>function($in){
-                return [
-                    'openai_api_key' => isset($in['openai_api_key']) ? trim($in['openai_api_key']) : '',
-                    'openai_model'   => isset($in['openai_model']) ? sanitize_text_field($in['openai_model']) : 'gpt-4o-mini',
-                    'auto_apply'     => empty($in['auto_apply']) ? 0 : 1,
-                    'tone'           => sanitize_text_field($in['tone'] ?? 'sexy-bold-confident'),
-                    'language_mode'  => sanitize_text_field($in['language_mode'] ?? 'en_fr_mix'),
-                    'fr_percent'     => max(0, min(100, intval($in['fr_percent'] ?? 10))),
-                    'max_hashtags'   => max(0, min(12, intval($in['max_hashtags'] ?? 6))),
-                    'max_emojis'     => max(0, min(6,  intval($in['max_emojis'] ?? 2))),
-                    'banned_words'   => trim($in['banned_words'] ?? ''),
-                    'brand_terms'    => trim($in['brand_terms'] ?? 'ONLYMATT, OM43'),
-                ];
-            },
-            'default'=>[
-                'openai_api_key' => '',
-                'openai_model'   => 'gpt-4o-mini',
-                'auto_apply'     => 0,
-                'tone'           => 'sexy-bold-confident',
-                'language_mode'  => 'en_fr_mix',
-                'fr_percent'     => 10,
-                'max_hashtags'   => 6,
-                'max_emojis'     => 2,
-                'banned_words'   => '',
-                'brand_terms'    => 'ONLYMATT, OM43',
-            ]
-        ]);
-    }
+
     public function settings_page(){
         if (!current_user_can('manage_options')) return;
         $opt = get_option(self::OPT_KEY, []);
@@ -352,6 +322,7 @@ class Spread_It_Plugin {
                 b.textContent='Copied';
                 setTimeout(function(){ b.textContent='Copy'; },1200);
             });
+
             document.addEventListener('click',function(e){
               var btn=e.target.closest('.btn.social.instagram,.btn.social.tiktok,.btn.social.youtube');
               if(!btn) return;
@@ -359,17 +330,17 @@ class Spread_It_Plugin {
               var caption=btn.dataset.caption;
               var imgUrl=btn.dataset.image;
               var videoUrl=btn.dataset.video;
-              var network=btn.querySelector('.label').textContent;
-              if(caption){
-                navigator.clipboard.writeText(caption).then(function(){
-                  var orig=btn.innerHTML;
-                  btn.innerHTML='<span class=\"label\">✓ Caption copiée!</span>';
-                  setTimeout(function(){ btn.innerHTML=orig; },2000);
-                });
-              }
+              var network=btn.dataset.network || (btn.querySelector('.label') && btn.querySelector('.label').textContent.trim().toLowerCase());
+              var instructions={
+                instagram: 'Ouvre Instagram → nouveau post → choisir média → coller la légende.',
+                tiktok: 'Ouvre TikTok → + → uploader vidéo → coller la légende.',
+                youtube: 'Ouvre YouTube Studio → Créer → Upload vidéo → coller le titre/description.'
+              };
+              var instr = instructions[network] || 'Colle la légende dans l\'appli et ajoute le média.';
+
               // helper to pick extension and download
               function downloadUrl(url, defaultName){
-                if(!url) return;
+                if(!url) return false;
                 try {
                   var ext = url.split('.').pop().split(/[#?]/)[0] || '';
                   var filename = defaultName + (ext ? '.'+ext : '');
@@ -380,10 +351,36 @@ class Spread_It_Plugin {
                   document.body.appendChild(a);
                   a.click();
                   document.body.removeChild(a);
-                } catch(err) { /* ignore */ }
+                  return true;
+                } catch(err) { return false; }
               }
-              if(imgUrl){ downloadUrl(imgUrl, 'spread-it-'+network.toLowerCase()); }
-              if(videoUrl){ downloadUrl(videoUrl, 'spread-it-'+network.toLowerCase()); }
+
+              if(caption){
+                navigator.clipboard.writeText(caption).then(function(){
+                  var orig=btn.innerHTML;
+                  var msgs=[];
+                  msgs.push('Caption copiée');
+                  var mediaDownloaded = false;
+                  if(imgUrl){ mediaDownloaded = downloadUrl(imgUrl, 'spread-it-'+network); }
+                  if(videoUrl){ mediaDownloaded = downloadUrl(videoUrl, 'spread-it-'+network) || mediaDownloaded; }
+                  if(mediaDownloaded) msgs.push('Média téléchargé');
+                  var msg = '✓ ' + msgs.join(' + ') + ' — ' + instr;
+                  btn.innerHTML='<span class=\"label\">'+msg+'<\/span>';
+                  setTimeout(function(){ btn.innerHTML=orig; },3000);
+                }).catch(function(){
+                  var orig=btn.innerHTML;
+                  btn.innerHTML='<span class=\"label\">⚠️ Impossible de copier<\/span>';
+                  setTimeout(function(){ btn.innerHTML=orig; },2000);
+                });
+              } else {
+                var orig=btn.innerHTML;
+                var mediaDownloaded=false;
+                if(imgUrl){ mediaDownloaded = downloadUrl(imgUrl, 'spread-it-'+network); }
+                if(videoUrl){ mediaDownloaded = downloadUrl(videoUrl, 'spread-it-'+network) || mediaDownloaded; }
+                var msg = mediaDownloaded ? '✓ Média téléchargé — '+instr : '✓ Action effectuée — '+instr;
+                btn.innerHTML='<span class=\"label\">'+msg+'<\/span>';
+                setTimeout(function(){ btn.innerHTML=orig; },3000);
+              }
             });
         })();";
         wp_add_inline_script('jquery', $js);
