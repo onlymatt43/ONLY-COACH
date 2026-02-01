@@ -8,11 +8,11 @@ const authToken = process.env.TURSO_AUTH_TOKEN;
 const patchedFetch: typeof fetch = async (input, init) => {
   if (process.env.NODE_ENV !== 'production') {
     const kind = typeof input;
-    if (kind === 'object' && input !== null) {
-      const maybe = input as Record<string, unknown>;
+    if (kind === 'object' && input !== null && !(input instanceof URL)) {
+      const maybe = input as any;
       console.debug('patchedFetch request', {
-        url: (maybe as any).url,
-        method: (maybe as any).method
+        url: maybe.url,
+        method: maybe.method
       });
     } else {
       console.debug('patchedFetch request', { input });
@@ -24,8 +24,8 @@ const patchedFetch: typeof fetch = async (input, init) => {
 
   if (input instanceof Request) {
     resource = input;
-  } else if (typeof input === 'object' && input !== null && 'url' in (input as Record<string, unknown>)) {
-    const requestLike = input as Record<string, unknown>;
+  } else if (typeof input === 'object' && input !== null && !(input instanceof URL) && 'url' in input) {
+    const requestLike = input as any;
     resource = requestLike.url as string;
     const { url: _omit, ...rest } = requestLike;
     options = rest as RequestInit;
