@@ -1,74 +1,36 @@
-# 🤖 Coach - Assistant IA Multifonctions
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-Assistant IA intelligent pour l'analyse de bugs, la création de contenu et bien plus.
+## Getting Started
 
-## 🚀 Déploiement sur Render.com
-
-### Étapes rapides :
-1. **Fork/Clone** ce repository
-2. **Aller sur** [render.com](https://render.com)
-3. **Connecter** votre compte GitHub
-4. **Sélectionner** ce repository
-5. **Déployer** automatiquement avec `render.yaml`
-
-### Variables d'environnement requises :
-```bash
-OAI_BASE=https://api.openai.com/v1
-OAI_MODEL=gpt-3.5-turbo
-OPENAI_API_KEY=votre_clé_openai_ici
-PORT=5057
-```
-
-## 🐳 Déploiement Local avec Docker
+First, run the development server:
 
 ```bash
-# Démarrer tous les services
-docker-compose up --build
-
-# Accéder à l'application
-open http://localhost:5057
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-## 🛠️ Fonctionnalités
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-- 🐛 **Analyse de bugs** - Debug intelligent de code
-- 📝 **Rédaction** - Génération de contenu
-- 🔍 **Recherche** - Assistant de recherche avancée
-- 💬 **Chat** - Conversation avec IA
-- 📊 **Analyses** - Rapports et insights
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-## 🔧 Configuration
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-### Fichiers de configuration :
-- `memory.yaml` - Mémoire persistante
-- `presets.yaml` - Prompts prédéfinis
-- `sites.yaml` - Sites web favoris
+## Learn More
 
-### API Support :
-- OpenAI GPT-3.5/4
-- Ollama (local)
-- Claude (Anthropic)
+To learn more about Next.js, take a look at the following resources:
 
-## 📱 Interface Web
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-L'application inclut une interface web moderne accessible via :
-- `/` - Interface principale
-- `/static/simple.html` - Interface simplifiée
-- `/health` - Status de l'application
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## 🔒 Sécurité
+## Deploy on Vercel
 
-- Authentification API
-- CORS configuré
-- Variables d'environnement sécurisées
-- Conteneurs non-root
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-## 📈 Monitoring
-
-- Health checks intégrés
-- Logs structurés
-- Métriques de performance
-
----
-
-**Créé par Matt Courchesne** | [OnlyMatt.ca](https://onlymatt.ca)
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

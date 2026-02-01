@@ -1,9 +1,0 @@
-__pycache__/
-*.pyc
-config.json
-memory.db
-*.db
-response.mp3
-temp.ogg
-temp.wav
-.env
