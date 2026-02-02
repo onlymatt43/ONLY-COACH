@@ -6,3 +6,18 @@ export const messages = sqliteTable('messages', {
   content: text('content').notNull(),
   createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date())
 });
+
+export const categories = sqliteTable('categories', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  name: text('name').notNull(),
+  createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date())
+});
+
+export const resources = sqliteTable('resources', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  categoryId: integer('category_id').notNull(),
+  title: text('title').notNull(),
+  url: text('url'),
+  notes: text('notes'),
+  createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date())
+});

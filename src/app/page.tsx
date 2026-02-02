@@ -2,6 +2,8 @@
 import { useEffect, useRef, useState } from "react";
 
 type ChatMsg = { role: "user" | "assistant" | "system"; content: string };
+type Category = { id: number; name: string };
+type Resource = { id: number; categoryId: number; title: string; url?: string; notes?: string };
 
 export default function Home() {
   const [messages, setMessages] = useState<ChatMsg[]>([]);
@@ -11,6 +13,14 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const [cats, setCats] = useState<Category[]>([]);
+  const [activeCat, setActiveCat] = useState<number | null>(null);
+  const [resources, setResources] = useState<Resource[]>([]);
+  const [newCatName, setNewCatName] = useState("");
+  const [resTitle, setResTitle] = useState("");
+  const [resUrl, setResUrl] = useState("");
+  const [resNotes, setResNotes] = useState("");
 
   // On mount: fetch status + history and focus input
   useEffect(() => {
@@ -34,6 +44,42 @@ export default function Home() {
       })
       .catch((e) => setError(`History error: ${String(e)}`));
   }, []);
+
+  // Load categories/resources and seed "VIDEOTHEQUE" if empty
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const r = await fetch('/api/categories');
+        const list: Category[] = await r.json();
+        if (Array.isArray(list) && list.length > 0) {
+          setCats(list);
+          setActiveCat(list[0].id);
+        } else {
+          const created = await fetch('/api/categories', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: 'VIDEOTHEQUE' }) });
+          const cat = await created.json();
+          setCats([cat]);
+          setActiveCat(cat.id);
+        }
+      } catch (e) {
+        console.error('Failed to load categories', e);
+      }
+    };
+    load();
+  }, []);
+
+  useEffect(() => {
+    const loadRes = async () => {
+      if (!activeCat) return;
+      try {
+        const r = await fetch(`/api/resources?categoryId=${activeCat}`);
+        const list: Resource[] = await r.json();
+        setResources(Array.isArray(list) ? list : []);
+      } catch (e) {
+        console.error('Failed to load resources', e);
+      }
+    };
+    loadRes();
+  }, [activeCat]);
 
   // Autoscroll
   useEffect(() => {
@@ -76,6 +122,58 @@ export default function Home() {
           <div className="text-xs text-emerald-300/80">DB: {dbStatus}</div>
         </div>
       </header>
+
+      {/* Categories */}
+      <section className="mx-auto max-w-3xl px-4 pt-4">
+        <div className="flex items-center gap-2 overflow-x-auto">
+          {cats.map((c) => (
+            <button key={c.id} onClick={() => setActiveCat(c.id)} className={`px-3 py-2 rounded border text-xs ${activeCat === c.id ? 'border-yellow-400 text-yellow-300' : 'border-slate-700 text-slate-300'} bg-slate-900`}>
+              {c.name}
+            </button>
+          ))}
+          <form onSubmit={async (e) => { e.preventDefault(); const name = newCatName.trim(); if (!name) return; const r = await fetch('/api/categories', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name }) }); const cat = await r.json(); setCats((x) => [...x, cat]); setNewCatName(''); }} className="flex items-center gap-2">
+            <input value={newCatName} onChange={(e) => setNewCatName(e.target.value)} placeholder="Nouvelle catégorie" className="px-2 py-2 text-xs rounded border border-slate-700 bg-slate-900" />
+            <button className="px-2 py-2 text-xs rounded bg-emerald-600 text-white">Ajouter</button>
+          </form>
+        </div>
+      </section>
+
+      {/* Resources */}
+      <section className="mx-auto max-w-3xl px-4 pt-4">
+        <h2 className="text-sm text-slate-300 mb-2">Ressources {activeCat ? `(#${activeCat})` : ''}</h2>
+        <div className="space-y-2">
+          {resources.length === 0 ? (
+            <div className="text-xs text-slate-400">Aucune ressource — ajoutez un lien ci-dessous.</div>
+          ) : (
+            resources.map((r) => (
+              <a key={r.id} href={r.url || '#'} target="_blank" rel="noreferrer" className="block rounded border border-slate-700 bg-slate-900 px-3 py-2">
+                <div className="text-sm text-slate-200">{r.title}</div>
+                {r.url && <div className="text-xs text-slate-400 truncate">{r.url}</div>}
+                {r.notes && <div className="text-xs text-slate-500 mt-1">{r.notes}</div>}
+              </a>
+            ))
+          )}
+        </div>
+
+        <form
+          onSubmit={async (e) => {
+            e.preventDefault();
+            if (!activeCat) return;
+            const payload = { categoryId: activeCat, title: resTitle.trim(), url: resUrl.trim(), notes: resNotes.trim() };
+            if (!payload.title) return;
+            const r = await fetch('/api/resources', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            const created = await r.json();
+            setResources((x) => [...x, created]);
+            setResTitle(''); setResUrl(''); setResNotes('');
+          }}
+          className="mt-3 grid grid-cols-1 md:grid-cols-4 gap-2"
+        >
+          <input value={resTitle} onChange={(e) => setResTitle(e.target.value)} placeholder="Titre" className="rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm" />
+          <input value={resUrl} onChange={(e) => setResUrl(e.target.value)} placeholder="URL (https://...)" className="rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm" />
+          <input value={resNotes} onChange={(e) => setResNotes(e.target.value)} placeholder="Notes" className="rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm" />
+          <button className="rounded bg-emerald-600 px-3 py-2 text-sm text-white">Ajouter</button>
+        </form>
+      </section>
 
       {/* Messages */}
       <div className="mx-auto max-w-3xl px-4 pt-6 pb-40 space-y-4">
