@@ -54,27 +54,25 @@ async function initDb() {
     }
     client = createClient(opts);
     dbInstance = drizzle(client, { schema });
-    await client.execute(`
-      CREATE TABLE IF NOT EXISTS messages (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        role TEXT NOT NULL,
-        content TEXT NOT NULL,
-        created_at INTEGER DEFAULT (strftime('%s','now'))
-      );
-      CREATE TABLE IF NOT EXISTS categories (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        created_at INTEGER DEFAULT (strftime('%s','now'))
-      );
-      CREATE TABLE IF NOT EXISTS resources (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        category_id INTEGER NOT NULL,
-        title TEXT NOT NULL,
-        url TEXT,
-        notes TEXT,
-        created_at INTEGER DEFAULT (strftime('%s','now'))
-      );
-    `);
+    await client.execute(`CREATE TABLE IF NOT EXISTS messages (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      role TEXT NOT NULL,
+      content TEXT NOT NULL,
+      created_at INTEGER DEFAULT (strftime('%s','now'))
+    )`);
+    await client.execute(`CREATE TABLE IF NOT EXISTS categories (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      created_at INTEGER DEFAULT (strftime('%s','now'))
+    )`);
+    await client.execute(`CREATE TABLE IF NOT EXISTS resources (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      category_id INTEGER NOT NULL,
+      title TEXT NOT NULL,
+      url TEXT,
+      notes TEXT,
+      created_at INTEGER DEFAULT (strftime('%s','now'))
+    )`);
     activeBackend = 'remote';
     console.log('DB ready: remote Turso');
   };
@@ -82,27 +80,25 @@ async function initDb() {
   const initLocal = async () => {
     client = createClient({ url: 'file:.data/dev.db' });
     dbInstance = drizzle(client, { schema });
-    await client.execute(`
-      CREATE TABLE IF NOT EXISTS messages (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        role TEXT NOT NULL,
-        content TEXT NOT NULL,
-        created_at INTEGER DEFAULT (strftime('%s','now'))
-      );
-      CREATE TABLE IF NOT EXISTS categories (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        created_at INTEGER DEFAULT (strftime('%s','now'))
-      );
-      CREATE TABLE IF NOT EXISTS resources (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        category_id INTEGER NOT NULL,
-        title TEXT NOT NULL,
-        url TEXT,
-        notes TEXT,
-        created_at INTEGER DEFAULT (strftime('%s','now'))
-      );
-    `);
+    await client.execute(`CREATE TABLE IF NOT EXISTS messages (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      role TEXT NOT NULL,
+      content TEXT NOT NULL,
+      created_at INTEGER DEFAULT (strftime('%s','now'))
+    )`);
+    await client.execute(`CREATE TABLE IF NOT EXISTS categories (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      created_at INTEGER DEFAULT (strftime('%s','now'))
+    )`);
+    await client.execute(`CREATE TABLE IF NOT EXISTS resources (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      category_id INTEGER NOT NULL,
+      title TEXT NOT NULL,
+      url TEXT,
+      notes TEXT,
+      created_at INTEGER DEFAULT (strftime('%s','now'))
+    )`);
     activeBackend = 'local';
     console.log('DB ready: local file .data/dev.db');
   };
