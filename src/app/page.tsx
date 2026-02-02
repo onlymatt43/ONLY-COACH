@@ -10,6 +10,7 @@ export default function Home() {
   const [dbStatus, setDbStatus] = useState<string>("UNKNOWN");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const [projects, setProjects] = useState<Project[]>([]);
   const [projName, setProjName] = useState("");
@@ -47,6 +48,11 @@ export default function Home() {
     } catch (e) {
       console.warn('Failed to read projects from localStorage', e);
     }
+  }, []);
+
+  // Focus input on mount to make the composer obvious
+  useEffect(() => {
+    inputRef.current?.focus();
   }, []);
 
   // Scroll automatique vers le bas
@@ -197,6 +203,7 @@ export default function Home() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="ENTER COMMAND..."
+            ref={inputRef}
             className="w-full bg-[#0a1414] border border-[#1a2e2e] rounded p-4 text-[#FFD700] focus:outline-none focus:border-[#FFD700] focus:ring-1 focus:ring-[#FFD700] transition-all placeholder-gray-700"
           />
           <button
@@ -207,6 +214,17 @@ export default function Home() {
             Send
           </button>
         </form>
+      </div>
+
+      {/* Quick action to reveal composer if hidden */}
+      <div className="fixed right-6 bottom-28 md:bottom-36 z-50">
+        <button
+          onClick={() => inputRef.current?.focus()}
+          className="px-3 py-2 rounded bg-[#0f6b5a] text-xs text-white border border-[#0f6b5a]/60 hover:bg-[#0d5b4d]"
+          aria-label="Focus composer"
+        >
+          New Message
+        </button>
       </div>
     </main>
   );
