@@ -1,13 +1,18 @@
 import { NextResponse } from 'next/server';
 // On utilise les .../ pour remonter les dossiers manuellement
 import { db, ensureDbReady } from '../../../db';
+import { hasKV, kvGetHistory, kvAppend, ChatMessage } from '../../../db/kv';
 import { messages } from '../../../db/schema';
 
 export async function GET() {
   try {
+    if (hasKV()) {
+      const history = await kvGetHistory();
+      return NextResponse.json(history);
+    }
     await ensureDbReady();
     const history = await db.select().from(messages);
-    return NextResponse.json(history);
+    return NextResponse.json(history as unknown as ChatMessage[]);
   } catch (error) {
     console.error('GET /api/chat failed', error);
     return NextResponse.json({
@@ -65,6 +70,14 @@ export async function POST(req: Request) {
       assistantText = data.response ?? '';
     }
 
+    if (hasKV()) {
+      try {
+        await kvAppend({ role: 'user', content });
+        await kvAppend({ role: 'assistant', content: assistantText });
+      } catch (e) {
+        console.error('KV append failed', e);
+      }
+    }
     if (dbOk) {
       await db.insert(messages).values({ role: 'assistant', content: assistantText });
     }
