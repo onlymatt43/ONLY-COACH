@@ -1,234 +1,129 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
-type Project = { id: string; name: string; url: string };
+type ChatMsg = { role: "user" | "assistant" | "system"; content: string };
 
 export default function Home() {
+  const [messages, setMessages] = useState<ChatMsg[]>([]);
   const [input, setInput] = useState("");
-  const [chat, setChat] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [dbStatus, setDbStatus] = useState<string>("UNKNOWN");
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [dbStatus, setDbStatus] = useState("UNKNOWN");
+  const [error, setError] = useState<string | null>(null);
+  const endRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [projName, setProjName] = useState("");
-  const [projUrl, setProjUrl] = useState("");
-
-  // Charger l'historique au démarrage
-  useEffect(() => {
-    // status
-    fetch('/api/status')
-      .then((res) => res.json())
-      .then((s) => setDbStatus((s.db || 'UNKNOWN').toUpperCase()))
-      .catch(() => setDbStatus('UNKNOWN'));
-
-    fetch('/api/chat')
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setChat(data);
-          setErrorMsg(null);
-        } else {
-          console.warn('Unexpected history payload', data);
-          setChat([]);
-          if (data.error) setErrorMsg(`${data.error}: ${data.details || ''}`);
-        }
-      })
-      .catch((error) => {
-        console.error('Failed to load history', error);
-        setChat([]);
-        setErrorMsg(`Connection Failed: ${String(error)}`);
-      });
-    // load shortcuts from localStorage
-    try {
-      const raw = localStorage.getItem('om43:projects');
-      if (raw) setProjects(JSON.parse(raw));
-    } catch (e) {
-      console.warn('Failed to read projects from localStorage', e);
-    }
-  }, []);
-
-  // Focus input on mount to make the composer obvious
+  // On mount: fetch status + history and focus input
   useEffect(() => {
     inputRef.current?.focus();
+
+    fetch("/api/status")
+      .then((r) => r.json())
+      .then((s) => setDbStatus(String(s?.db ?? "UNKNOWN").toUpperCase()))
+      .catch(() => setDbStatus("UNKNOWN"));
+
+    fetch("/api/chat")
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setMessages(data as ChatMsg[]);
+          setError(null);
+        } else {
+          setMessages([]);
+          setError(data?.error ? `${data.error}${data.details ? `: ${data.details}` : ""}` : null);
+        }
+      })
+      .catch((e) => setError(`History error: ${String(e)}`));
   }, []);
 
-  // Scroll automatique vers le bas
+  // Autoscroll
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [chat]);
+    endRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, loading]);
 
-  const sendMessage = async (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim()) return;
-
-    const userMessage = { role: 'user', content: input };
-    setChat((prev) => [...prev, userMessage]);
-    setInput('');
+    const text = input.trim();
+    if (!text) return;
+    setInput("");
     setLoading(true);
-
+    const userMsg: ChatMsg = { role: "user", content: text };
+    setMessages((m) => [...m, userMsg]);
     try {
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: input })
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: text })
       });
-
-      if (!res.ok) {
-        throw new Error(`HTTP ${res.status}`);
-      }
-
       const data = await res.json();
-
-      if (data && data.role && data.content) {
-        setChat((prev) => [...prev, data]);
+      if (res.ok && data?.content) {
+        setMessages((m) => [...m, { role: data.role ?? "assistant", content: String(data.content) }]);
       } else {
-        console.warn('Unexpected chat payload', data);
+        setError(data?.error ? `${data.error}${data.details ? `: ${data.details}` : ""}` : `HTTP ${res.status}`);
       }
-    } catch (error) {
-      console.error('Failed to send message', error);
+    } catch (err) {
+      setError(`Send failed: ${String(err)}`);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
-  };
-
-  // Projects helpers
-  useEffect(() => {
-    try {
-      localStorage.setItem('om43:projects', JSON.stringify(projects));
-    } catch (e) {
-      console.warn('Failed to save projects', e);
-    }
-  }, [projects]);
-
-  const addProject = (e?: React.FormEvent) => {
-    e?.preventDefault();
-    const name = projName.trim();
-    const url = projUrl.trim();
-    if (!name || !url) return;
-    setProjects((p) => [{ id: String(Date.now()), name, url }, ...p]);
-    setProjName('');
-    setProjUrl('');
-  };
-
-  const removeProject = (id: string) => {
-    setProjects((p) => p.filter((x) => x.id !== id));
   };
 
   return (
-    <main className="flex flex-col h-screen bg-[#050a0a] text-gray-200 font-mono">
-      {/* Sidebar: projets */}
-      <aside className="hidden md:flex flex-col w-64 p-4 gap-4 border-r border-[#0f2222] fixed left-0 top-0 bottom-0 bg-[#041010]/50 backdrop-blur z-20">
-        <h2 className="text-sm text-gray-300 uppercase tracking-wider">Projets</h2>
-        <div className="flex-1 overflow-y-auto space-y-2">
-          {projects.length === 0 && (
-            <div className="text-xs text-gray-500">Aucun projet — ajoute un raccourci.</div>
-          )}
-          {projects.map((p) => (
-            <div key={p.id} className="flex items-center justify-between gap-2">
-              <a href={p.url} target="_blank" rel="noreferrer" className="flex-1 text-sm text-[#BFDCDC] hover:underline truncate">
-                {p.name}
-              </a>
-              <button onClick={() => removeProject(p.id)} className="text-xs text-red-400 px-2 py-1 rounded border border-red-600/30 hover:bg-red-600/10">
-                ×
-              </button>
-            </div>
-          ))}
+    <main className="min-h-screen bg-slate-950 text-slate-100">
+      {/* Header */}
+      <header className="sticky top-0 z-20 border-b border-slate-800 bg-slate-950/90 backdrop-blur">
+        <div className="mx-auto max-w-3xl px-4 py-3 flex items-center justify-between">
+          <h1 className="font-semibold tracking-widest text-yellow-400">SYSTEM /// OM43</h1>
+          <div className="text-xs text-emerald-300/80">DB: {dbStatus}</div>
         </div>
+      </header>
 
-        <form onSubmit={addProject} className="pt-2 border-t border-[#072020]">
-          <input value={projName} onChange={(e) => setProjName(e.target.value)} placeholder="Nom" className="w-full mb-2 p-2 rounded bg-[#071616] text-sm" />
-          <input value={projUrl} onChange={(e) => setProjUrl(e.target.value)} placeholder="URL (https://...)" className="w-full mb-2 p-2 rounded bg-[#071616] text-sm" />
-          <div className="flex gap-2">
-            <button type="submit" className="flex-1 text-xs bg-[#0f6b5a] px-2 py-2 rounded">Ajouter</button>
-            <button type="button" onClick={() => { setProjName(''); setProjUrl(''); }} className="text-xs px-2 py-2 rounded border border-[#0f6b5a]">Clear</button>
-          </div>
-        </form>
-      </aside>
-      {/* Header Techno */}
-      <div className="p-6 border-b border-[#1a2e2e] bg-[#050a0a]/90 backdrop-blur fixed w-full z-10 flex justify-between items-center">
-        <h1 className="text-xl tracking-widest text-[#FFD700] uppercase font-bold">
-          System <span className="text-gray-600">///</span> OM43
-        </h1>
-        <div className="flex gap-2 text-xs text-[#004d40]">
-          <span className="border border-[#004d40] px-2 py-1 rounded">DB: {dbStatus}</span>
-          <span className="border border-[#004d40] px-2 py-1 rounded">AI: CONNECTED</span>
-        </div>
-      </div>
-
-      {/* Zone de Chat */}
-      <div className="flex-1 overflow-y-auto p-6 pt-24 pb-32 space-y-6 md:pl-80">
-        {errorMsg && (
-          <div className="mx-auto max-w-2xl p-4 bg-red-700/25 border-2 border-red-400/70 rounded text-red-200 text-sm font-mono shadow-[0_0_25px_rgba(255,0,0,0.15)]">
-            <h3 className="font-bold mb-2">SYSTEM ALERT</h3>
-            <p>{errorMsg}</p>
-            <p className="mt-2 text-xs opacity-70">Check Vercel Environment Variables (TURSO_AUTH_TOKEN)</p>
+      {/* Messages */}
+      <div className="mx-auto max-w-3xl px-4 pt-6 pb-40 space-y-4">
+        {error && (
+          <div className="rounded border border-red-500/40 bg-red-900/20 px-4 py-3 text-sm text-red-200">
+            {error}
           </div>
         )}
-        {chat.length === 0 && !loading && !errorMsg && (
-          <button
-            type="button"
-            onClick={() => inputRef.current?.focus()}
-            className="flex flex-col items-center justify-center h-64 text-gray-300 text-sm space-y-3 w-full"
-          >
-            <span className="uppercase tracking-widest text-[#FFD700]">System Online</span>
-            <span className="opacity-80">Tapez en bas pour commencer ou cliquez ici.</span>
-          </button>
+
+        {messages.length === 0 && !error && (
+          <div className="rounded border border-slate-800 bg-slate-900/40 px-6 py-12 text-center">
+            <div className="mb-2 text-yellow-300">System online</div>
+            <div className="text-slate-400 text-sm">Start chatting below.</div>
+          </div>
         )}
-        {chat.map((msg, i) => (
-          <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-            <div
-              className={`max-w-[80%] p-4 rounded-lg backdrop-blur-md border ${
-                msg.role === 'user'
-                  ? 'bg-[#1a2e2e]/40 border-[#FFD700]/20 text-[#FFD700] rounded-br-none'
-                  : 'bg-black/40 border-gray-800 text-gray-300 rounded-bl-none shadow-[0_0_15px_rgba(0,0,0,0.5)]'
-              }`}
-            >
-              <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+
+        {messages.map((m, i) => (
+          <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
+            <div className={`${m.role === "user" ? "bg-emerald-900/30 border-emerald-700/40" : "bg-slate-900/60 border-slate-700/60"} border rounded px-4 py-3 max-w-[80%]`}> 
+              <p className="whitespace-pre-wrap text-sm leading-relaxed">{m.content}</p>
             </div>
           </div>
         ))}
+
         {loading && (
-          <div className="flex justify-start animate-pulse">
-            <div className="bg-black/40 border border-gray-800 p-3 rounded text-xs text-gray-500">
-              PROCESSING DATA STREAM...
-            </div>
-          </div>
+          <div className="text-xs text-slate-400">Processing…</div>
         )}
-        <div ref={messagesEndRef} />
+        <div ref={endRef} />
       </div>
 
-      {/* Input Bar */}
-      <div className="fixed bottom-0 w-full bg-[#050a0a] p-6 border-t border-[#1a2e2e] z-40">
-        <form onSubmit={sendMessage} className="relative max-w-4xl mx-auto flex gap-4">
+      {/* Composer */}
+      <div className="fixed bottom-0 left-0 right-0 z-30 border-t border-slate-800 bg-slate-950/95">
+        <form onSubmit={onSubmit} className="mx-auto max-w-3xl px-4 py-3 flex gap-2">
           <input
-            type="text"
+            ref={inputRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="ENTER COMMAND..."
-            ref={inputRef}
-            className="w-full bg-[#0a1414] border border-[#1a2e2e] rounded p-4 text-[#FFD700] focus:outline-none focus:border-[#FFD700] focus:ring-1 focus:ring-[#FFD700] transition-all placeholder-gray-700"
+            placeholder="Type a message…"
+            className="flex-1 rounded border border-slate-700 bg-slate-900 px-3 py-3 text-sm outline-none focus:border-yellow-400"
           />
           <button
             type="submit"
             disabled={loading}
-            className="px-8 bg-[#FFD700] text-black font-bold rounded hover:bg-[#e6c200] disabled:opacity-50 transition-colors uppercase tracking-wider"
+            className="rounded bg-yellow-400 px-4 py-3 text-black text-sm font-semibold disabled:opacity-60"
           >
             Send
           </button>
         </form>
-      </div>
-
-      {/* Quick action to reveal composer if hidden */}
-      <div className="fixed right-6 bottom-28 md:bottom-36 z-50">
-        <button
-          onClick={() => inputRef.current?.focus()}
-          className="px-3 py-2 rounded bg-[#0f6b5a] text-xs text-white border border-[#0f6b5a]/60 hover:bg-[#0d5b4d]"
-          aria-label="Focus composer"
-        >
-          New Message
-        </button>
       </div>
     </main>
   );
