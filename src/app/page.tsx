@@ -8,6 +8,7 @@ export default function Home() {
   const [chat, setChat] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [dbStatus, setDbStatus] = useState<string>("UNKNOWN");
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const [projects, setProjects] = useState<Project[]>([]);
@@ -27,14 +28,17 @@ export default function Home() {
       .then((data) => {
         if (Array.isArray(data)) {
           setChat(data);
+          setErrorMsg(null);
         } else {
           console.warn('Unexpected history payload', data);
           setChat([]);
+          if (data.error) setErrorMsg(`${data.error}: ${data.details || ''}`);
         }
       })
       .catch((error) => {
         console.error('Failed to load history', error);
         setChat([]);
+        setErrorMsg(`Connection Failed: ${String(error)}`);
       });
     // load shortcuts from localStorage
     try {
@@ -149,7 +153,14 @@ export default function Home() {
 
       {/* Zone de Chat */}
       <div className="flex-1 overflow-y-auto p-6 pt-24 pb-32 space-y-6 md:pl-80">
-        {chat.length === 0 && !loading && (
+        {errorMsg && (
+          <div className="mx-auto max-w-2xl p-4 bg-red-900/20 border border-red-500/50 rounded text-red-200 text-sm font-mono">
+            <h3 className="font-bold mb-2">SYSTEM ALERT</h3>
+            <p>{errorMsg}</p>
+            <p className="mt-2 text-xs opacity-70">Check Vercel Environment Variables (TURSO_AUTH_TOKEN)</p>
+          </div>
+        )}
+        {chat.length === 0 && !loading && !errorMsg && (
           <div className="flex flex-col items-center justify-center h-64 text-gray-600 text-sm space-y-4">
             <p className="uppercase tracking-widest">System Online</p>
             <p>Commencez la conversation ou ajoutez un projet via la barre latérale.</p>
