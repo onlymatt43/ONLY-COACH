@@ -79,6 +79,7 @@ async function initDb() {
 
   try {
     if (mode === 'remote') {
+      console.log('DB init: attempting remote Turso', { url });
       await initRemote();
       return;
     }
@@ -87,9 +88,14 @@ async function initDb() {
       return;
     }
     // auto: try remote, then local
+    console.log('DB init: auto mode, trying remote Turso first', { url });
     await initRemote();
   } catch (err) {
-    console.error('Remote Turso init failed', err);
+    console.error('Remote Turso init failed', {
+      url,
+      mode,
+      error: err instanceof Error ? err.message : String(err)
+    });
     if (mode === 'remote') throw err; // explicit remote -> propagate
     await initLocal();
   }
