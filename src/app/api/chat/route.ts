@@ -20,8 +20,14 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const { content } = await req.json();
-    await ensureDbReady();
-    await db.insert(messages).values({ role: 'user', content });
+    let dbOk = true;
+    try {
+      await ensureDbReady();
+      await db.insert(messages).values({ role: 'user', content });
+    } catch (e) {
+      dbOk = false;
+      console.error('DB not available, proceeding stateless', e instanceof Error ? e.message : String(e));
+    }
     const apiKey = process.env.OPENAI_API_KEY;
     let assistantText = '';
 
@@ -59,7 +65,9 @@ export async function POST(req: Request) {
       assistantText = data.response ?? '';
     }
 
-    await db.insert(messages).values({ role: 'assistant', content: assistantText });
+    if (dbOk) {
+      await db.insert(messages).values({ role: 'assistant', content: assistantText });
+    }
     return NextResponse.json({ role: 'assistant', content: assistantText });
   } catch (error) {
     console.error('POST /api/chat failed', error);
