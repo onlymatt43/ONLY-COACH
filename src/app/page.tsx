@@ -160,17 +160,21 @@ export default function Home() {
       {/* Zone de Chat */}
       <div className="flex-1 overflow-y-auto p-6 pt-24 pb-32 space-y-6 md:pl-80">
         {errorMsg && (
-          <div className="mx-auto max-w-2xl p-4 bg-red-900/20 border border-red-500/50 rounded text-red-200 text-sm font-mono">
+          <div className="mx-auto max-w-2xl p-4 bg-red-700/25 border-2 border-red-400/70 rounded text-red-200 text-sm font-mono shadow-[0_0_25px_rgba(255,0,0,0.15)]">
             <h3 className="font-bold mb-2">SYSTEM ALERT</h3>
             <p>{errorMsg}</p>
             <p className="mt-2 text-xs opacity-70">Check Vercel Environment Variables (TURSO_AUTH_TOKEN)</p>
           </div>
         )}
         {chat.length === 0 && !loading && !errorMsg && (
-          <div className="flex flex-col items-center justify-center h-64 text-gray-600 text-sm space-y-4">
-            <p className="uppercase tracking-widest">System Online</p>
-            <p>Commencez la conversation ou ajoutez un projet via la barre latérale.</p>
-          </div>
+          <button
+            type="button"
+            onClick={() => inputRef.current?.focus()}
+            className="flex flex-col items-center justify-center h-64 text-gray-300 text-sm space-y-3 w-full"
+          >
+            <span className="uppercase tracking-widest text-[#FFD700]">System Online</span>
+            <span className="opacity-80">Tapez en bas pour commencer ou cliquez ici.</span>
+          </button>
         )}
         {chat.map((msg, i) => (
           <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
@@ -196,7 +200,7 @@ export default function Home() {
       </div>
 
       {/* Input Bar */}
-      <div className="fixed bottom-0 w-full bg-[#050a0a] p-6 border-t border-[#1a2e2e]">
+      <div className="fixed bottom-0 w-full bg-[#050a0a] p-6 border-t border-[#1a2e2e] z-40">
         <form onSubmit={sendMessage} className="relative max-w-4xl mx-auto flex gap-4">
           <input
             type="text"
