@@ -1,12 +1,18 @@
-'use client';
-import { useState, useEffect, useRef } from 'react';
+"use client";
+import { useState, useEffect, useRef } from "react";
+
+type Project = { id: string; name: string; url: string };
 
 export default function Home() {
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
   const [chat, setChat] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [dbStatus, setDbStatus] = useState<string>('UNKNOWN');
+  const [dbStatus, setDbStatus] = useState<string>("UNKNOWN");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [projName, setProjName] = useState("");
+  const [projUrl, setProjUrl] = useState("");
 
   // Charger l'historique au démarrage
   useEffect(() => {
@@ -30,6 +36,13 @@ export default function Home() {
         console.error('Failed to load history', error);
         setChat([]);
       });
+    // load shortcuts from localStorage
+    try {
+      const raw = localStorage.getItem('om43:projects');
+      if (raw) setProjects(JSON.parse(raw));
+    } catch (e) {
+      console.warn('Failed to read projects from localStorage', e);
+    }
   }, []);
 
   // Scroll automatique vers le bas
@@ -70,8 +83,59 @@ export default function Home() {
     setLoading(false);
   };
 
+  // Projects helpers
+  useEffect(() => {
+    try {
+      localStorage.setItem('om43:projects', JSON.stringify(projects));
+    } catch (e) {
+      console.warn('Failed to save projects', e);
+    }
+  }, [projects]);
+
+  const addProject = (e?: React.FormEvent) => {
+    e?.preventDefault();
+    const name = projName.trim();
+    const url = projUrl.trim();
+    if (!name || !url) return;
+    setProjects((p) => [{ id: String(Date.now()), name, url }, ...p]);
+    setProjName('');
+    setProjUrl('');
+  };
+
+  const removeProject = (id: string) => {
+    setProjects((p) => p.filter((x) => x.id !== id));
+  };
+
   return (
     <main className="flex flex-col h-screen bg-[#050a0a] text-gray-200 font-mono">
+      {/* Sidebar: projets */}
+      <aside className="hidden md:flex flex-col w-64 p-4 gap-4 border-r border-[#0f2222] fixed left-0 top-0 bottom-0 bg-[#041010]/50 backdrop-blur z-20">
+        <h2 className="text-sm text-gray-300 uppercase tracking-wider">Projets</h2>
+        <div className="flex-1 overflow-y-auto space-y-2">
+          {projects.length === 0 && (
+            <div className="text-xs text-gray-500">Aucun projet — ajoute un raccourci.</div>
+          )}
+          {projects.map((p) => (
+            <div key={p.id} className="flex items-center justify-between gap-2">
+              <a href={p.url} target="_blank" rel="noreferrer" className="flex-1 text-sm text-[#BFDCDC] hover:underline truncate">
+                {p.name}
+              </a>
+              <button onClick={() => removeProject(p.id)} className="text-xs text-red-400 px-2 py-1 rounded border border-red-600/30 hover:bg-red-600/10">
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
+
+        <form onSubmit={addProject} className="pt-2 border-t border-[#072020]">
+          <input value={projName} onChange={(e) => setProjName(e.target.value)} placeholder="Nom" className="w-full mb-2 p-2 rounded bg-[#071616] text-sm" />
+          <input value={projUrl} onChange={(e) => setProjUrl(e.target.value)} placeholder="URL (https://...)" className="w-full mb-2 p-2 rounded bg-[#071616] text-sm" />
+          <div className="flex gap-2">
+            <button type="submit" className="flex-1 text-xs bg-[#0f6b5a] px-2 py-2 rounded">Ajouter</button>
+            <button type="button" onClick={() => { setProjName(''); setProjUrl(''); }} className="text-xs px-2 py-2 rounded border border-[#0f6b5a]">Clear</button>
+          </div>
+        </form>
+      </aside>
       {/* Header Techno */}
       <div className="p-6 border-b border-[#1a2e2e] bg-[#050a0a]/90 backdrop-blur fixed w-full z-10 flex justify-between items-center">
         <h1 className="text-xl tracking-widest text-[#FFD700] uppercase font-bold">
@@ -84,7 +148,7 @@ export default function Home() {
       </div>
 
       {/* Zone de Chat */}
-      <div className="flex-1 overflow-y-auto p-6 pt-24 pb-32 space-y-6">
+      <div className="flex-1 overflow-y-auto p-6 pt-24 pb-32 space-y-6 md:pl-80">
         {chat.map((msg, i) => (
           <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div

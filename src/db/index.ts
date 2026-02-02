@@ -95,8 +95,11 @@ async function initDb() {
   }
 }
 
-const ready = initDb();
-export const ensureDbReady = () => ready;
+let ready: Promise<void> | null = null;
+export const ensureDbReady = () => {
+  if (!ready) ready = initDb();
+  return ready;
+};
 export const db = new Proxy({} as LibSQLDatabase<typeof schema>, {
   get(_target, prop) {
     if (!dbInstance) {
