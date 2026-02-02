@@ -18,6 +18,8 @@ export default function Home() {
   const [activeCat, setActiveCat] = useState<number | null>(null);
   const [resources, setResources] = useState<Resource[]>([]);
   const [newCatName, setNewCatName] = useState("");
+  const [editingCatId, setEditingCatId] = useState<number | null>(null);
+  const [editingCatName, setEditingCatName] = useState("");
   const [resTitle, setResTitle] = useState("");
   const [resUrl, setResUrl] = useState("");
   const [resNotes, setResNotes] = useState("");
@@ -127,9 +129,43 @@ export default function Home() {
       <section className="mx-auto max-w-3xl px-4 pt-4">
         <div className="flex items-center gap-2 overflow-x-auto">
           {cats.map((c) => (
-            <button key={c.id} onClick={() => setActiveCat(c.id)} className={`px-3 py-2 rounded border text-xs ${activeCat === c.id ? 'border-yellow-400 text-yellow-300' : 'border-slate-700 text-slate-300'} bg-slate-900`}>
-              {c.name}
-            </button>
+            <div key={c.id} className="flex items-center gap-1">
+              {editingCatId === c.id ? (
+                <form
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    const name = editingCatName.trim();
+                    if (!name) { setEditingCatId(null); return; }
+                    await fetch('/api/categories', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: c.id, name }) });
+                    setCats((arr) => arr.map((x) => x.id === c.id ? { ...x, name } : x));
+                    setEditingCatId(null);
+                  }}
+                  className="flex items-center gap-1"
+                >
+                  <input autoFocus value={editingCatName} onChange={(e) => setEditingCatName(e.target.value)} className="px-2 py-2 text-xs rounded border border-slate-700 bg-slate-900" />
+                  <button className="px-2 py-2 text-xs rounded bg-emerald-600 text-white">OK</button>
+                </form>
+              ) : (
+                <button onClick={() => setActiveCat(c.id)} className={`px-3 py-2 rounded border text-xs ${activeCat === c.id ? 'border-yellow-400 text-yellow-300' : 'border-slate-700 text-slate-300'} bg-slate-900`}>
+                  {c.name}
+                </button>
+              )}
+              {editingCatId !== c.id && (
+                <button
+                  onClick={() => { setEditingCatId(c.id); setEditingCatName(c.name); }}
+                  className="px-2 py-2 text-xs rounded border border-slate-700 text-slate-300"
+                >Renommer</button>
+              )}
+              <button
+                onClick={async () => {
+                  if (!confirm(`Supprimer la catégorie "${c.name}" ?`)) return;
+                  await fetch('/api/categories', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: c.id }) });
+                  setCats((arr) => arr.filter((x) => x.id !== c.id));
+                  if (activeCat === c.id) setActiveCat(cats.length ? cats[0]?.id ?? null : null);
+                }}
+                className="px-2 py-2 text-xs rounded border border-red-700 text-red-500"
+              >Supprimer</button>
+            </div>
           ))}
           <form onSubmit={async (e) => { e.preventDefault(); const name = newCatName.trim(); if (!name) return; const r = await fetch('/api/categories', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name }) }); const cat = await r.json(); setCats((x) => [...x, cat]); setNewCatName(''); }} className="flex items-center gap-2">
             <input value={newCatName} onChange={(e) => setNewCatName(e.target.value)} placeholder="Nouvelle catégorie" className="px-2 py-2 text-xs rounded border border-slate-700 bg-slate-900" />
@@ -146,11 +182,20 @@ export default function Home() {
             <div className="text-xs text-slate-400">Aucune ressource — ajoutez un lien ci-dessous.</div>
           ) : (
             resources.map((r) => (
-              <a key={r.id} href={r.url || '#'} target="_blank" rel="noreferrer" className="block rounded border border-slate-700 bg-slate-900 px-3 py-2">
-                <div className="text-sm text-slate-200">{r.title}</div>
-                {r.url && <div className="text-xs text-slate-400 truncate">{r.url}</div>}
-                {r.notes && <div className="text-xs text-slate-500 mt-1">{r.notes}</div>}
-              </a>
+              <div key={r.id} className="flex items-center gap-2 rounded border border-slate-700 bg-slate-900 px-3 py-2">
+                <a href={r.url || '#'} target="_blank" rel="noreferrer" className="flex-1">
+                  <div className="text-sm text-slate-200">{r.title}</div>
+                  {r.url && <div className="text-xs text-slate-400 truncate">{r.url}</div>}
+                  {r.notes && <div className="text-xs text-slate-500 mt-1">{r.notes}</div>}
+                </a>
+                <button
+                  onClick={async () => {
+                    await fetch('/api/resources', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: r.id }) });
+                    setResources((arr) => arr.filter((x) => x.id !== r.id));
+                  }}
+                  className="px-2 py-1 text-xs rounded border border-red-700 text-red-500"
+                >Supprimer</button>
+              </div>
             ))
           )}
         </div>
