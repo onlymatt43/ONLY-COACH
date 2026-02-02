@@ -48,7 +48,11 @@ async function initDb() {
 
   const initRemote = async () => {
     if (!url || !authToken) throw new Error('Missing Turso credentials');
-    client = createClient({ url, authToken, fetch: patchedFetch });
+    const opts: any = { url, authToken };
+    if (process.env.NODE_ENV !== 'production') {
+      opts.fetch = patchedFetch;
+    }
+    client = createClient(opts);
     dbInstance = drizzle(client, { schema });
     await client.execute(`
       CREATE TABLE IF NOT EXISTS messages (
