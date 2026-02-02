@@ -149,6 +149,12 @@ export default function Home() {
 
       {/* Zone de Chat */}
       <div className="flex-1 overflow-y-auto p-6 pt-24 pb-32 space-y-6 md:pl-80">
+        {chat.length === 0 && !loading && (
+          <div className="flex flex-col items-center justify-center h-64 text-gray-600 text-sm space-y-4">
+            <p className="uppercase tracking-widest">System Online</p>
+            <p>Commencez la conversation ou ajoutez un projet via la barre latérale.</p>
+          </div>
+        )}
         {chat.map((msg, i) => (
           <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div
