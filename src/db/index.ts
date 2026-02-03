@@ -73,6 +73,8 @@ async function initDb() {
       notes TEXT,
       created_at INTEGER DEFAULT (strftime('%s','now'))
     )`);
+    // Optional migration: add blob_url if needed later
+    try { await client.execute(`ALTER TABLE resources ADD COLUMN blob_url TEXT`); } catch {}
     await client.execute(`CREATE TABLE IF NOT EXISTS envkeys (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
@@ -107,6 +109,7 @@ async function initDb() {
       notes TEXT,
       created_at INTEGER DEFAULT (strftime('%s','now'))
     )`);
+    try { await client.execute(`ALTER TABLE resources ADD COLUMN blob_url TEXT`); } catch {}
     await client.execute(`CREATE TABLE IF NOT EXISTS envkeys (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,

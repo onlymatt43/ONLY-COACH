@@ -29,6 +29,7 @@ export default function Home() {
   const [newEnvService, setNewEnvService] = useState("");
   const [newEnvDesc, setNewEnvDesc] = useState("");
   const [newEnvLoc, setNewEnvLoc] = useState("vercel:production");
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
 
   // On mount: fetch status + history and focus input
   useEffect(() => {
@@ -225,17 +226,28 @@ export default function Home() {
           onSubmit={async (e) => {
             e.preventDefault();
             if (!activeCat) return;
-            const payload = { categoryId: activeCat, title: resTitle.trim(), url: resUrl.trim(), notes: resNotes.trim() };
-            if (!payload.title) return;
+            const title = resTitle.trim();
+            if (!title) return;
+            let finalUrl = resUrl.trim();
+            if (uploadFile) {
+              const fd = new FormData();
+              fd.append('file', uploadFile);
+              fd.append('category', String(activeCat));
+              const up = await fetch('/api/upload', { method: 'POST', body: fd });
+              const upData = await up.json();
+              if (up.ok && upData?.url) finalUrl = upData.url;
+            }
+            const payload = { categoryId: activeCat, title, url: finalUrl || undefined, notes: resNotes.trim() };
             const r = await fetch('/api/resources', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
             const created = await r.json();
             setResources((x) => [...x, created]);
-            setResTitle(''); setResUrl(''); setResNotes('');
+            setResTitle(''); setResUrl(''); setResNotes(''); setUploadFile(null);
           }}
           className="mt-3 grid grid-cols-1 md:grid-cols-4 gap-2"
         >
           <input value={resTitle} onChange={(e) => setResTitle(e.target.value)} placeholder="Titre" className="rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm" />
           <input value={resUrl} onChange={(e) => setResUrl(e.target.value)} placeholder="URL (https://...)" className="rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm" />
+          <input type="file" onChange={(e) => setUploadFile(e.target.files?.[0] || null)} className="rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm" />
           <input value={resNotes} onChange={(e) => setResNotes(e.target.value)} placeholder="Notes" className="rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm" />
           <button className="rounded bg-emerald-600 px-3 py-2 text-sm text-white">Ajouter</button>
         </form>
