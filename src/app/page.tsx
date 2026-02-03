@@ -17,6 +17,10 @@ export default function Home() {
   const [cats, setCats] = useState<Category[]>([]);
   const [activeCat, setActiveCat] = useState<number | null>(null);
   const [resources, setResources] = useState<Resource[]>([]);
+  const [resTotal, setResTotal] = useState(0);
+  const [resQuery, setResQuery] = useState("");
+  const [resLimit, setResLimit] = useState(20);
+  const [resOffset, setResOffset] = useState(0);
   const [newCatName, setNewCatName] = useState("");
   const [editingCatId, setEditingCatId] = useState<number | null>(null);
   const [editingCatName, setEditingCatName] = useState("");
@@ -95,15 +99,17 @@ export default function Home() {
     const loadRes = async () => {
       if (!activeCat) return;
       try {
-        const r = await fetch(`/api/resources?categoryId=${activeCat}`);
-        const list: Resource[] = await r.json();
-        setResources(Array.isArray(list) ? list : []);
+        const params = new URLSearchParams({ categoryId: String(activeCat), q: resQuery, limit: String(resLimit), offset: String(resOffset) });
+        const r = await fetch(`/api/resources?${params.toString()}`);
+        const data = await r.json();
+        setResources(Array.isArray(data.items) ? data.items : []);
+        setResTotal(Number(data.total || 0));
       } catch (e) {
         console.error('Failed to load resources', e);
       }
     };
     loadRes();
-  }, [activeCat]);
+  }, [activeCat, resQuery, resLimit, resOffset]);
 
   // Autoscroll
   useEffect(() => {
@@ -199,6 +205,10 @@ export default function Home() {
       {/* Resources */}
       <section className="mx-auto max-w-3xl px-4 pt-4">
         <h2 className="text-sm text-slate-300 mb-2">Ressources {activeCat ? `(#${activeCat})` : ''}</h2>
+        <div className="flex items-center gap-2 mb-2">
+          <input value={resQuery} onChange={(e) => { setResQuery(e.target.value); setResOffset(0); }} placeholder="Recherche (titre, URL, notes)" className="flex-1 rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm" />
+          <span className="text-xs text-slate-400">{resTotal} au total</span>
+        </div>
         <div className="space-y-2">
           {resources.length === 0 ? (
             <div className="text-xs text-slate-400">Aucune ressource — ajoutez un lien ci-dessous.</div>
@@ -251,6 +261,16 @@ export default function Home() {
           <input value={resNotes} onChange={(e) => setResNotes(e.target.value)} placeholder="Notes" className="rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm" />
           <button className="rounded bg-emerald-600 px-3 py-2 text-sm text-white">Ajouter</button>
         </form>
+
+        <div className="mt-3 flex items-center gap-2">
+          <button disabled={resOffset === 0} onClick={() => setResOffset((o) => Math.max(0, o - resLimit))} className="px-3 py-2 text-xs rounded border border-slate-700 text-slate-300 disabled:opacity-50">Précédent</button>
+          <button disabled={resOffset + resLimit >= resTotal} onClick={() => setResOffset((o) => o + resLimit)} className="px-3 py-2 text-xs rounded border border-slate-700 text-slate-300 disabled:opacity-50">Suivant</button>
+          <select value={resLimit} onChange={(e) => { setResLimit(Number(e.target.value)); setResOffset(0); }} className="px-2 py-2 text-xs rounded border border-slate-700 bg-slate-900 text-slate-300">
+            <option value={10}>10</option>
+            <option value={20}>20</option>
+            <option value={50}>50</option>
+          </select>
+        </div>
       </section>
 
       {/* Environment Index (metadata only) */}

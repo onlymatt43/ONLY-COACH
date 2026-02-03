@@ -1,19 +1,29 @@
 import { NextResponse } from 'next/server';
 import { db, ensureDbReady } from '@/db';
 import { resources } from '@/db/schema';
-import { eq } from 'drizzle-orm';
+import { and, eq, like, or, sql } from 'drizzle-orm';
 
 export async function GET(req: Request) {
   try {
     await ensureDbReady();
     const { searchParams } = new URL(req.url);
     const categoryId = searchParams.get('categoryId');
-    if (categoryId) {
-      const rows = await db.select().from(resources).where(eq(resources.categoryId, Number(categoryId))).orderBy(resources.createdAt);
-      return NextResponse.json(rows);
+    const q = (searchParams.get('q') || '').trim();
+    const limit = Number(searchParams.get('limit') || 20);
+    const offset = Number(searchParams.get('offset') || 0);
+
+    const filters: any[] = [];
+    if (categoryId) filters.push(eq(resources.categoryId, Number(categoryId)));
+    if (q) {
+      const pat = `%${q}%`;
+      filters.push(or(like(resources.title, pat), like(resources.url, pat), like(resources.notes, pat)));
     }
-    const all = await db.select().from(resources).orderBy(resources.createdAt);
-    return NextResponse.json(all);
+    const where = filters.length ? and(...filters) : undefined;
+
+    const items = await db.select().from(resources).where(where as any).orderBy(resources.createdAt).limit(limit).offset(offset);
+    const totalRow = await db.select({ count: sql<number>`count(*)` }).from(resources).where(where as any);
+    const total = totalRow?.[0]?.count ?? 0;
+    return NextResponse.json({ items, total });
   } catch (e) {
     return NextResponse.json({ error: 'resources_get_failed', details: e instanceof Error ? e.message : String(e) }, { status: 500 });
   }
