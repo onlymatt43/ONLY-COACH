@@ -34,6 +34,9 @@ export default function Home() {
   const [newEnvDesc, setNewEnvDesc] = useState("");
   const [newEnvLoc, setNewEnvLoc] = useState("vercel:production");
   const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadMsg, setUploadMsg] = useState("");
 
   // On mount: fetch status + history and focus input
   useEffect(() => {
@@ -232,6 +235,41 @@ export default function Home() {
           )}
         </div>
 
+        {/* Drag-and-drop zone */}
+        <div
+          onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+          onDragLeave={() => setIsDragging(false)}
+          onDrop={async (e) => {
+            e.preventDefault(); setIsDragging(false);
+            if (!activeCat) return;
+            const files = Array.from(e.dataTransfer.files || []);
+            if (files.length === 0) return;
+            setUploading(true); setUploadMsg(`Uploading ${files.length} files...`);
+            try {
+              for (const f of files) {
+                const fd = new FormData(); fd.append('file', f); fd.append('category', String(activeCat));
+                const up = await fetch('/api/upload', { method: 'POST', body: fd });
+                const upData = await up.json();
+                if (up.ok && upData?.url) {
+                  const r = await fetch('/api/resources', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ categoryId: activeCat, title: f.name, url: upData.url }) });
+                  const created = await r.json();
+                  setResources((x) => [...x, created]);
+                }
+              }
+              setUploadMsg('Upload terminé');
+            } catch (err) {
+              setUploadMsg(`Erreur d\u2019upload: ${String(err)}`);
+            } finally {
+              setUploading(false);
+              setTimeout(() => setUploadMsg(''), 2500);
+            }
+          }}
+          className={`mt-3 rounded border ${isDragging ? 'border-yellow-400 bg-yellow-400/10' : 'border-slate-700 bg-slate-900'} px-3 py-4 text-xs text-slate-400`}
+        >
+          Glissez-déposez des fichiers ici pour les téléverser dans la catégorie.
+          {uploading && <span className="ml-2 text-slate-300">{uploadMsg}</span>}
+        </div>
+
         <form
           onSubmit={async (e) => {
             e.preventDefault();
@@ -257,7 +295,37 @@ export default function Home() {
         >
           <input value={resTitle} onChange={(e) => setResTitle(e.target.value)} placeholder="Titre" className="rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm" />
           <input value={resUrl} onChange={(e) => setResUrl(e.target.value)} placeholder="URL (https://...)" className="rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm" />
-          <input type="file" onChange={(e) => setUploadFile(e.target.files?.[0] || null)} className="rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm" />
+          <input type="file" multiple onChange={(e) => {
+            const files = e.target.files;
+            if (files && files.length > 1) {
+              // Batch upload when multiple selected
+              (async () => {
+                if (!activeCat) return;
+                setUploading(true); setUploadMsg(`Uploading ${files.length} files...`);
+                try {
+                  for (const f of Array.from(files)) {
+                    const fd = new FormData(); fd.append('file', f); fd.append('category', String(activeCat));
+                    const up = await fetch('/api/upload', { method: 'POST', body: fd });
+                    const upData = await up.json();
+                    if (up.ok && upData?.url) {
+                      const r = await fetch('/api/resources', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ categoryId: activeCat, title: f.name, url: upData.url }) });
+                      const created = await r.json();
+                      setResources((x) => [...x, created]);
+                    }
+                  }
+                  setUploadMsg('Upload terminé');
+                } catch (err) {
+                  setUploadMsg(`Erreur d\u2019upload: ${String(err)}`);
+                } finally {
+                  setUploading(false);
+                  setTimeout(() => setUploadMsg(''), 2500);
+                }
+              })();
+              e.target.value = '';
+            } else {
+              setUploadFile(files?.[0] || null);
+            }
+          }} className="rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm" />
           <input value={resNotes} onChange={(e) => setResNotes(e.target.value)} placeholder="Notes" className="rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm" />
           <button className="rounded bg-emerald-600 px-3 py-2 text-sm text-white">Ajouter</button>
         </form>
