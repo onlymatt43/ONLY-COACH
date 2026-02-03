@@ -23,6 +23,12 @@ export default function Home() {
   const [resTitle, setResTitle] = useState("");
   const [resUrl, setResUrl] = useState("");
   const [resNotes, setResNotes] = useState("");
+  const [envItems, setEnvItems] = useState<{ id: number; name: string; service?: string; description?: string; location?: string }[]>([]);
+  const [envPresence, setEnvPresence] = useState<Record<string, boolean>>({});
+  const [newEnvName, setNewEnvName] = useState("");
+  const [newEnvService, setNewEnvService] = useState("");
+  const [newEnvDesc, setNewEnvDesc] = useState("");
+  const [newEnvLoc, setNewEnvLoc] = useState("vercel:production");
 
   // On mount: fetch status + history and focus input
   useEffect(() => {
@@ -67,6 +73,21 @@ export default function Home() {
       }
     };
     load();
+  }, []);
+
+  // Load env index (names only; no values)
+  useEffect(() => {
+    const loadEnv = async () => {
+      try {
+        const r = await fetch('/api/env');
+        const data = await r.json();
+        setEnvItems(data.items || []);
+        setEnvPresence(data.presence || {});
+      } catch (e) {
+        console.error('Failed to load env index', e);
+      }
+    };
+    loadEnv();
   }, []);
 
   useEffect(() => {
@@ -217,6 +238,50 @@ export default function Home() {
           <input value={resUrl} onChange={(e) => setResUrl(e.target.value)} placeholder="URL (https://...)" className="rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm" />
           <input value={resNotes} onChange={(e) => setResNotes(e.target.value)} placeholder="Notes" className="rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm" />
           <button className="rounded bg-emerald-600 px-3 py-2 text-sm text-white">Ajouter</button>
+        </form>
+      </section>
+
+      {/* Environment Index (metadata only) */}
+      <section className="mx-auto max-w-3xl px-4 pt-6">
+        <h2 className="text-sm text-slate-300 mb-2">Environnements (index sécurisé)</h2>
+        <div className="space-y-2">
+          {envItems.length === 0 ? (
+            <div className="text-xs text-slate-400">Aucune entrée — ajoutez des noms de variables (pas de valeurs).</div>
+          ) : (
+            envItems.map((e) => (
+              <div key={e.id} className="flex items-center gap-2 rounded border border-slate-700 bg-slate-900 px-3 py-2">
+                <div className="flex-1">
+                  <div className="text-sm text-slate-200">{e.name}</div>
+                  <div className="text-xs text-slate-500">{e.service || '—'} · {e.location || '—'} · {e.description || ''}</div>
+                </div>
+                <span className={`text-xs px-2 py-1 rounded border ${envPresence[e.name] ? 'border-emerald-700 text-emerald-400' : 'border-slate-700 text-slate-400'}`}>{envPresence[e.name] ? 'Présent' : 'Absent'}</span>
+                <button
+                  onClick={async () => {
+                    await fetch('/api/env', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: e.id }) });
+                    setEnvItems((arr) => arr.filter((x) => x.id !== e.id));
+                  }}
+                  className="px-2 py-1 text-xs rounded border border-red-700 text-red-500"
+                >Supprimer</button>
+              </div>
+            ))
+          )}
+        </div>
+        <form
+          onSubmit={async (ev) => {
+            ev.preventDefault();
+            const name = newEnvName.trim(); if (!name) return;
+            const r = await fetch('/api/env', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, service: newEnvService || undefined, description: newEnvDesc || undefined, location: newEnvLoc || undefined }) });
+            const created = await r.json();
+            setEnvItems((x) => [...x, created]);
+            setNewEnvName(''); setNewEnvService(''); setNewEnvDesc('');
+          }}
+          className="mt-3 grid grid-cols-1 md:grid-cols-4 gap-2"
+        >
+          <input value={newEnvName} onChange={(e) => setNewEnvName(e.target.value)} placeholder="Nom de la variable (ex: OPENAI_API_KEY)" className="rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm" />
+          <input value={newEnvService} onChange={(e) => setNewEnvService(e.target.value)} placeholder="Service" className="rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm" />
+          <input value={newEnvDesc} onChange={(e) => setNewEnvDesc(e.target.value)} placeholder="Description" className="rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm" />
+          <input value={newEnvLoc} onChange={(e) => setNewEnvLoc(e.target.value)} placeholder="Localisation (ex: vercel:production)" className="rounded border border-slate-700 bg-slate-900 px-3 py-2 text-sm" />
+          <button className="md:col-span-4 rounded bg-emerald-600 px-3 py-2 text-sm text-white">Ajouter</button>
         </form>
       </section>
 

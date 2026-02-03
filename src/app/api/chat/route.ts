@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 // On utilise les .../ pour remonter les dossiers manuellement
 import { db, ensureDbReady } from '../../../db';
 import { hasKV, kvGetHistory, kvAppend, ChatMessage } from '../../../db/kv';
-import { messages, categories, resources } from '../../../db/schema';
+import { messages, categories, resources, envkeys } from '../../../db/schema';
 import { eq } from 'drizzle-orm';
 
 export async function GET() {
@@ -38,12 +38,14 @@ export async function POST(req: Request) {
     let assistantText = '';
     let catsCtx: any[] = [];
     let resCtx: any[] = [];
+    let envCtx: any[] = [];
 
     try {
       await ensureDbReady();
       catsCtx = await db.select().from(categories);
       // Limit resources for context
       resCtx = await db.select().from(resources);
+      envCtx = await db.select().from(envkeys);
     } catch (e) {
       console.warn('Context load failed (categories/resources)', e);
     }
@@ -58,7 +60,7 @@ export async function POST(req: Request) {
         body: JSON.stringify({
           model: 'gpt-4o-mini',
           messages: [
-            { role: 'system', content: `You are Coach, an orchestrator for categories and resources. You can plan actions and return them in a fenced block labeled om_actions containing JSON. Schema: [{"type":"create_category","name":"..."}|{"type":"rename_category","id":123,"name":"..."}|{"type":"add_resource","categoryName":"...","title":"...","url":"...","notes":"..."}|{"type":"delete_resource","id":456}]. Keep your normal reply outside the fenced block. Only include om_actions when changes are needed. Current categories: ${JSON.stringify(catsCtx)}. Current resources (trimmed): ${JSON.stringify(resCtx.slice(0, 50))}.` },
+            { role: 'system', content: `You are Coach, an orchestrator for categories, resources, and environment keys. You can plan actions and return them in a fenced block labeled om_actions containing JSON. Schema: [{"type":"create_category","name":"..."},{"type":"rename_category","id":123,"name":"..."},{"type":"add_resource","categoryName":"...","title":"...","url":"...","notes":"..."},{"type":"delete_resource","id":456},{"type":"add_env_key","name":"ENV_NAME","service":"OpenAI","description":"API key","location":"vercel:production"},{"type":"update_env_key","id":789,"name":"ENV_NAME","service":"...","description":"...","location":"..."},{"type":"delete_env_key","id":789}]. Never output nor request raw secret values — only names/metadata. Current categories: ${JSON.stringify(catsCtx)}. Current resources (trimmed): ${JSON.stringify(resCtx.slice(0, 50))}. Env keys: ${JSON.stringify(envCtx)}.` },
             { role: 'user', content }
           ],
           temperature: 0.7
@@ -108,6 +110,12 @@ export async function POST(req: Request) {
             }
           } else if (a.type === 'delete_resource' && a.id) {
             await db.delete(resources).where(eq(resources.id, Number(a.id)));
+          } else if (a.type === 'add_env_key' && a.name) {
+            await db.insert(envkeys).values({ name: String(a.name), service: a.service ? String(a.service) : null, description: a.description ? String(a.description) : null, location: a.location ? String(a.location) : null });
+          } else if (a.type === 'update_env_key' && a.id) {
+            await db.update(envkeys).set({ name: a.name ? String(a.name) : undefined, service: a.service ? String(a.service) : undefined, description: a.description ? String(a.description) : undefined, location: a.location ? String(a.location) : undefined }).where(eq(envkeys.id, Number(a.id)));
+          } else if (a.type === 'delete_env_key' && a.id) {
+            await db.delete(envkeys).where(eq(envkeys.id, Number(a.id)));
           }
         }
       } catch (e) {

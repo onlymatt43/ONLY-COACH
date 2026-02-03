@@ -73,6 +73,14 @@ async function initDb() {
       notes TEXT,
       created_at INTEGER DEFAULT (strftime('%s','now'))
     )`);
+    await client.execute(`CREATE TABLE IF NOT EXISTS envkeys (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      service TEXT,
+      description TEXT,
+      location TEXT,
+      created_at INTEGER DEFAULT (strftime('%s','now'))
+    )`);
     activeBackend = 'remote';
     console.log('DB ready: remote Turso');
   };
@@ -97,6 +105,14 @@ async function initDb() {
       title TEXT NOT NULL,
       url TEXT,
       notes TEXT,
+      created_at INTEGER DEFAULT (strftime('%s','now'))
+    )`);
+    await client.execute(`CREATE TABLE IF NOT EXISTS envkeys (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      service TEXT,
+      description TEXT,
+      location TEXT,
       created_at INTEGER DEFAULT (strftime('%s','now'))
     )`);
     activeBackend = 'local';

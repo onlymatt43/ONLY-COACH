@@ -21,3 +21,12 @@ export const resources = sqliteTable('resources', {
   notes: text('notes'),
   createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date())
 });
+
+export const envkeys = sqliteTable('envkeys', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  name: text('name').notNull(),
+  service: text('service'),
+  description: text('description'),
+  location: text('location'), // e.g., vercel:production
+  createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date())
+});
