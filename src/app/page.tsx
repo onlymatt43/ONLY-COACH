@@ -207,30 +207,41 @@ export default function Home() {
             <h2 className="text-sm text-slate-300">Projets</h2>
             <button onClick={async () => { const name = prompt('Nom du projet ?'); const v = (name || '').trim(); if (!v) return; const r = await fetch('/api/categories', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: v }) }); const cat = await r.json(); setCats((x) => [...x, cat]); }} className="text-xs rounded border border-slate-700 px-3 py-2 hover:border-yellow-400 hover:text-yellow-300">Nouveau projet</button>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
             {cats.map((c) => (
               <div
                 key={c.id}
                 onDragOver={(e) => { e.preventDefault(); setHoveredCat(c.id); }}
                 onDragLeave={() => { if (hoveredCat === c.id) setHoveredCat(null); }}
                 onDrop={async (e) => { e.preventDefault(); setHoveredCat(null); const files = Array.from(e.dataTransfer.files || []); if (files.length) await uploadFilesToCategory(c.id, files); }}
-                className={`relative rounded-xl border ${hoveredCat === c.id ? 'border-yellow-400 bg-yellow-400/10' : 'border-slate-800 bg-slate-900/60'} p-4 min-h-40 flex flex-col justify-between`}
+                className={`relative rounded-xl border ${hoveredCat === c.id ? 'border-yellow-400 bg-yellow-400/10' : 'border-slate-800 bg-slate-900/60'} p-0 shadow-lg shadow-black/40 overflow-hidden flex flex-col`}
               >
-                <div>
-                  <div className="text-sm font-medium text-slate-200">{c.name}</div>
-                  <div className="mt-1 text-xs text-slate-400">Déposez des fichiers ici</div>
+                {/* Card header */}
+                <div className="px-4 pt-4 pb-2 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs px-2 py-1 rounded bg-slate-800/70 border border-slate-700 text-slate-300">{c.name}</span>
+                    <span className="text-[10px] px-2 py-1 rounded bg-yellow-400/20 border border-yellow-400/40 text-yellow-300">IA</span>
+                  </div>
+                  <button onClick={() => setActiveCat(c.id)} className="text-[10px] px-2 py-1 rounded border border-slate-700 text-slate-300 hover:border-slate-600">Ouvrir</button>
                 </div>
-                <div className="flex items-center gap-2">
-                  <label className="text-xs rounded border border-slate-700 px-3 py-2 cursor-pointer hover:border-yellow-400 hover:text-yellow-300">
+                {/* Card body placeholder */}
+                <div className="mx-4 mb-3 rounded-lg border border-slate-800 bg-gradient-to-b from-slate-950 to-slate-900 h-32" />
+                {/* Card footer */}
+                <div className="px-4 pb-4 pt-2 flex items-center justify-between">
+                  <div className="flex items-center gap-3 text-[11px] text-slate-400">
+                    <span>👍</span>
+                    <span>💬</span>
+                    <span>↗</span>
+                  </div>
+                  <label className="text-[11px] rounded border border-slate-700 px-3 py-1 cursor-pointer hover:border-yellow-400 hover:text-yellow-300">
                     Upload
                     <input type="file" multiple className="hidden" onChange={async (e) => { const files = e.target.files; if (files && files.length) { await uploadFilesToCategory(c.id, files); e.target.value = ''; } }} />
                   </label>
-                  <button onClick={() => setActiveCat(c.id)} className="text-xs rounded border border-slate-700 px-3 py-2 hover:border-slate-600">Ouvrir</button>
                 </div>
               </div>
             ))}
             {cats.length === 0 && (
-              <div className="col-span-full rounded-xl border border-slate-800 bg-slate-900/60 p-6 text-center text-sm text-slate-400">Aucun projet — créez-en un pour commencer.</div>
+              <div className="col-span-full rounded-xl border border-slate-800 bg-slate-900/60 p-8 text-center text-sm text-slate-400">Aucun projet — créez-en un pour commencer.</div>
             )}
           </div>
           {uploading && <div className="mt-3 text-xs text-slate-300">{uploadMsg}</div>}
